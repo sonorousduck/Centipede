@@ -2,7 +2,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Player {
-    private int x;
+    private double x;
     private int y;
     private int size;
     private Rectangle rectangle;
@@ -13,6 +13,7 @@ public class Player {
         this.x = width / 2;
         this.size = size;
         this.rectangle = new Rectangle();
+        this.y = height - 10;
 
         rectangle.setHeight(this.size);
         rectangle.setWidth(this.size);
@@ -25,9 +26,15 @@ public class Player {
     }
 
 
-    public int getX() {
+    public double getX() {
         return this.x;
     }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public int getY() { return this.y; }
 
     public int getSize() {
         return this.size;
@@ -36,6 +43,8 @@ public class Player {
     public Rectangle getRectangle() {
         return this.rectangle;
     }
+
+
 
 
 }

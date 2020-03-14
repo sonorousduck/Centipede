@@ -3,25 +3,35 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Dictionary;
+
+
 public class CentipedeMain extends Application {
+
+
 
     public static void main(String[] args) {
         launch(args);
     }
+    private Settings setup = new Settings();
+    private Dictionary<String, Integer> settings = setup.createDictionary();
+    private boolean isPlaying = true;
 
-    private int height = 800;
-    private int width = 800;
-    private int rectangleSpeed = 200;
-    private double rectangleVelocity;
-    private long lastUpdateTime;
+
+
+
+
 
 
 
@@ -29,97 +39,100 @@ public class CentipedeMain extends Application {
     @Override
     public void start(Stage primaryStage) {
 
+        Game game = new Game(settings.get("height"), settings.get("width"), settings.get("playerSpeed"));
+        Player player = new Player(settings.get("width"), settings.get("playerSize"), settings.get("height"));
+
+
+
         Pane pane = new Pane();
-        Player player = new Player(width, 15, height);
+        System.out.println(settings);
+
+        pane.getChildren().add(player.getRectangle());
+        Scene scene = new Scene(pane, settings.get("width"), settings.get("height"));
+
+
+        // Cannonball. Will change image later
+
+
+
+        if (isPlaying) {
+            playAnimation(game, player);
+            movementControl(scene, game, player, pane);
+        }
 
 
 
 
 
-
-
-        Rectangle rect1 = new Rectangle();
-        rect1.setWidth(600);
-        rect1.setHeight(50);
-        rect1.setY(200);
-
-
-
-
-        pane.getChildren().addAll(player.getRectangle(), rect1);
-
-        Scene scene = new Scene(pane, width, height);
-
-        primaryStage.setTitle("Centipede");
         primaryStage.setScene(scene);
         primaryStage.show();
 
+    }
 
+    public void playAnimation(Game game, Player player) {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long timestamp) {
-                if (lastUpdateTime > 0) {
-                    final double elapsedSeconds = (timestamp - lastUpdateTime) / 1_000_000_000.0 ;
-                    final double deltaX = elapsedSeconds * rectangleVelocity;
+                // Courtesy of somewhere. Need to find it
+                if (game.getLastUpdateTime() > 0) {
+                    final double elapsedSeconds = (timestamp - game.getLastUpdateTime()) / 1_000_000_000.0;
+                    final double deltaX = elapsedSeconds * game.getRectangleVelocity();
                     final double oldX = player.getRectangle().getTranslateX();
-                    final double newX = Math.max(-width / 2, Math.min(width, oldX + deltaX));
+                    final double newX = Math.max(-game.getWidth() / 2, Math.min(game.getWidth(), oldX + deltaX));
                     player.getRectangle().setTranslateX(newX);
+                    player.setX(newX + settings.get("width")/2);
 
                 }
-                lastUpdateTime = timestamp;
+                game.setLastUpdateTime(timestamp);
             }
         };
         animationTimer.start();
+    }
 
+    public void movementControl(Scene scene, Game game, Player player, Pane pane) {
 
-        scene.setOnKeyPressed(e -> {
+        scene.setOnMouseClicked(e -> {
+            if (e.getButton().toString().equals("PRIMARY")) {
+                Bullet bulletClass = new Bullet();
+                ImageView bullet = bulletClass.createBullet(player);
+                pane.getChildren().add(bullet);
 
-            if (e.getCode() == KeyCode.A) {
-
-
-                rectangleVelocity = -rectangleSpeed;
-
-            }
-
-            if (e.getCode() == KeyCode.D) {
-
-
-                rectangleVelocity = rectangleSpeed;
-
-            }
-
-            if (e.getCode() == KeyCode.SPACE) {
-                System.out.println("SPACE!");
-                Line line = new Line();
-                line.setStartY(player.getRectangle().getY());
-                line.setEndY(player.getRectangle().getY() - 10);
-                line.setStartX(player.getRectangle().getTranslateX() + width / 2 + player.getSize() / 2);
-                line.setEndX(player.getRectangle().getTranslateX() + width / 2 + player.getSize() / 2);
-                pane.getChildren().addAll(line);
 
                 Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), ae -> {
-                    line.setStartX(line.getStartX());
-                    line.setEndX(line.getEndX());
-                    line.setStartY(line.getEndY());
-                    line.setEndY(line.getEndY() - 20);
 
-                    if (line.getBoundsInParent().intersects(rect1.getBoundsInParent())) {
-                        pane.getChildren().remove(rect1);
-                        pane.getChildren().remove(line);
-                    }
+                    bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
+//                    bullet.setStartX(bullet.getStartX());
+//                    bullet.setEndX(bullet.getEndX());
+//                    bullet.setStartY(bullet.getEndY());
+//                    bullet.setEndY(bullet.getEndY() - 20);
+
+//                    if (bullet.getBoundsInParent().intersects(rect1.getBoundsInParent())) {
+//                        pane.getChildren().remove(rect1);
+//                        pane.getChildren().remove(bullet);
+//                    }
                 }));
                 timeline.setCycleCount(Timeline.INDEFINITE);
                 timeline.play();
             }
         });
 
-        scene.setOnKeyReleased(e -> {
-            rectangleVelocity = 0;
+
+
+        scene.setOnKeyPressed(e -> {
+
+                if (e.getCode() == KeyCode.A) {
+                    game.setRectangleVelocity(-game.getRectangleSpeed());
+                }
+                if (e.getCode() == KeyCode.D) {
+                    game.setRectangleVelocity(game.getRectangleSpeed());
+                }
         });
 
-
-
-
+        scene.setOnKeyReleased(e -> {
+            game.setRectangleVelocity(0);
+        });
     }
+
+
 }
