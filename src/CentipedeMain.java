@@ -3,12 +3,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -28,36 +28,43 @@ public class CentipedeMain extends Application {
     private Dictionary<String, Integer> settings = setup.createDictionary();
     private boolean isPlaying = true;
 
-
-
-
-
-
-
-
-
     @Override
     public void start(Stage primaryStage) {
 
         Game game = new Game(settings.get("height"), settings.get("width"), settings.get("playerSpeed"));
         Player player = new Player(settings.get("width"), settings.get("playerSize"), settings.get("height"));
 
+        Rectangle rectangle = new Rectangle(100, 100, 100, 100);
+        rectangle.setX(100);
+        rectangle.setY(100);
 
 
+        BorderPane borderPane = new BorderPane();
         Pane pane = new Pane();
-        System.out.println(settings);
+        HBox hBox = new HBox();
+        hBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+
+
+        Text text = new Text("Testing");
+        hBox.getChildren().addAll(text);
+
+
 
         pane.getChildren().add(player.getRectangle());
-        Scene scene = new Scene(pane, settings.get("width"), settings.get("height"));
+        pane.getChildren().add(rectangle);
 
 
-        // Cannonball. Will change image later
+        borderPane.setCenter(pane);
+        borderPane.setTop(hBox);
+
+        Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
 
 
 
         if (isPlaying) {
             playAnimation(game, player);
-            movementControl(scene, game, player, pane);
+            movementControl(scene, game, player, pane, rectangle);
+
         }
 
 
@@ -89,7 +96,7 @@ public class CentipedeMain extends Application {
         animationTimer.start();
     }
 
-    public void movementControl(Scene scene, Game game, Player player, Pane pane) {
+    public void movementControl(Scene scene, Game game, Player player, Pane pane, Rectangle rectangle) {
 
         scene.setOnMouseClicked(e -> {
             if (e.getButton().toString().equals("PRIMARY")) {
@@ -107,10 +114,10 @@ public class CentipedeMain extends Application {
 //                    bullet.setStartY(bullet.getEndY());
 //                    bullet.setEndY(bullet.getEndY() - 20);
 
-//                    if (bullet.getBoundsInParent().intersects(rect1.getBoundsInParent())) {
-//                        pane.getChildren().remove(rect1);
-//                        pane.getChildren().remove(bullet);
-//                    }
+                    if (bullet.getBoundsInParent().intersects(rectangle.getBoundsInParent())) {
+                        pane.getChildren().remove(bullet);
+                        pane.getChildren().remove(rectangle);
+                    }
                 }));
                 timeline.setCycleCount(Timeline.INDEFINITE);
                 timeline.play();
@@ -133,6 +140,11 @@ public class CentipedeMain extends Application {
             game.setRectangleVelocity(0);
         });
     }
+
+    public void pauseGame() {
+        return;
+    }
+
 
 
 }
