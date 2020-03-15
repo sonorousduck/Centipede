@@ -1,3 +1,5 @@
+package Centipede;
+
 public class Game {
     private int height;
     private int width;

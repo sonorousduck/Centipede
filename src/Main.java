@@ -1,12 +1,10 @@
+import Centipede.CentipedeMain;
+import Snake.Snake;
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -44,8 +42,9 @@ public class Main extends Application {
         snakeButton.setY(settings.get("height")/ 4);
 
         snakeButton.setOnMouseClicked(e -> {
-            System.out.println("Snake was clicked");
-
+            Snake snake = new Snake();
+            snake.start(new Stage());
+            primaryStage.close();
         });
 
 

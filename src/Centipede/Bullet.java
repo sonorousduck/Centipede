@@ -1,4 +1,5 @@
-import javafx.scene.Scene;
+package Centipede;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 

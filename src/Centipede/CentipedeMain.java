@@ -1,10 +1,12 @@
+package Centipede;
+
+
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToolBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -14,6 +16,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 
 
@@ -27,6 +30,7 @@ public class CentipedeMain extends Application {
     private Settings setup = new Settings();
     private Dictionary<String, Integer> settings = setup.createDictionary();
     private boolean isPlaying = true;
+    private AnimationTimer animationTimer;
 
     @Override
     public void start(Stage primaryStage) {
@@ -61,10 +65,11 @@ public class CentipedeMain extends Application {
 
 
 
-        if (isPlaying) {
-            playAnimation(game, player);
-            movementControl(scene, game, player, pane, rectangle);
 
+        if (isPlaying) {
+            animationTimer = playAnimation(game, player);
+            unpauseGame(animationTimer);
+            movementControl(scene, game, player, pane, rectangle);
         }
 
 
@@ -76,7 +81,7 @@ public class CentipedeMain extends Application {
 
     }
 
-    public void playAnimation(Game game, Player player) {
+    public AnimationTimer playAnimation(Game game, Player player) {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long timestamp) {
@@ -93,7 +98,7 @@ public class CentipedeMain extends Application {
                 game.setLastUpdateTime(timestamp);
             }
         };
-        animationTimer.start();
+        return animationTimer;
     }
 
     public void movementControl(Scene scene, Game game, Player player, Pane pane, Rectangle rectangle) {
@@ -105,23 +110,21 @@ public class CentipedeMain extends Application {
                 pane.getChildren().add(bullet);
 
 
+
                 Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), ae -> {
 
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
-
-//                    bullet.setStartX(bullet.getStartX());
-//                    bullet.setEndX(bullet.getEndX());
-//                    bullet.setStartY(bullet.getEndY());
-//                    bullet.setEndY(bullet.getEndY() - 20);
 
                     if (bullet.getBoundsInParent().intersects(rectangle.getBoundsInParent())) {
                         pane.getChildren().remove(bullet);
                         pane.getChildren().remove(rectangle);
                     }
                 }));
-                timeline.setCycleCount(Timeline.INDEFINITE);
+
+                timeline.setCycleCount(90);
                 timeline.play();
             }
+
         });
 
 
@@ -134,6 +137,20 @@ public class CentipedeMain extends Application {
                 if (e.getCode() == KeyCode.D) {
                     game.setRectangleVelocity(game.getRectangleSpeed());
                 }
+            if (e.getCode() == KeyCode.ESCAPE) {
+                pauseGame(animationTimer);
+
+
+
+                PauseScreen pauseScreen = new PauseScreen();
+                if(pauseScreen.display()) {
+                    unpauseGame(animationTimer);
+                }
+
+
+            }
+
+
         });
 
         scene.setOnKeyReleased(e -> {
@@ -141,8 +158,12 @@ public class CentipedeMain extends Application {
         });
     }
 
-    public void pauseGame() {
-        return;
+    public void pauseGame(AnimationTimer animationTimer) {
+        animationTimer.stop();
+    }
+
+    public void unpauseGame(AnimationTimer animationTimer) {
+        animationTimer.start();
     }
 
 
