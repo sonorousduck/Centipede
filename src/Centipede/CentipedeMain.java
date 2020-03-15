@@ -31,7 +31,6 @@ public class CentipedeMain extends Application {
     private boolean isPlaying = true;
     private AnimationTimer animationTimer;
     private Timeline timeline;
-    private ParallelTransition parallelTransition = new ParallelTransition();
     private ArrayList<Timeline> timelines = new ArrayList<>();
 
     @Override
@@ -82,6 +81,7 @@ public class CentipedeMain extends Application {
             animationTimer = playAnimation(game, player);
             animationTimer.start();
             movementControl(scene, game, player, pane, rectangle);
+
         }
 
 
@@ -113,11 +113,20 @@ public class CentipedeMain extends Application {
     public void movementControl(Scene scene, Game game, Player player, Pane pane, Rectangle rectangle) {
 
         scene.setOnMouseClicked(e -> {
+            System.out.println(timelines.size());
             if (e.getButton().toString().equals("PRIMARY")) {
+
+                // Memory thing. Should delete and stop animations if too many of them
+                if (timelines.size() > 50) {
+                    for (int i = 0; i < 30; i++) {
+                        timelines.get(0).stop();
+                        timelines.remove(0);
+                    }
+                }
+
                 Bullet bulletClass = new Bullet();
                 ImageView bullet = bulletClass.createBullet(player);
                 pane.getChildren().add(bullet);
-
 
 
                 timeline = new Timeline(new KeyFrame(Duration.millis(16), ae -> {
@@ -130,6 +139,7 @@ public class CentipedeMain extends Application {
                     }
 
                 }));
+
 
                 timeline.setCycleCount(Timeline.INDEFINITE);
                 timeline.play();
