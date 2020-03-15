@@ -1,10 +1,19 @@
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.Dictionary;
+import java.util.Objects;
 
 public class Main extends Application {
 
@@ -18,15 +27,50 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        VBox vBox = new VBox();
+        Pane pane = new Pane();
 
-        Button game1 = new Button("Game 1");
-        Button game2 = new Button("Game 2");
-        Button game3 = new Button("Game 3");
+        Text text = new Text("ARCADE GAMES");
+        text.setFill(Color.WHITE);
+        text.setFont(new Font(100));
+        text.setX(settings.get("width")/ 18);
+        text.setY(100);
 
-        vBox.getChildren().addAll(game1, game2, game3);
 
-        Scene scene = new Scene(vBox, 800, 800);
+
+        ImageView snakeButton = new ImageView(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("SnakeButton.png")).toString(), true));
+        snakeButton.setPreserveRatio(true);
+        snakeButton.setFitHeight(200);
+        snakeButton.setX((settings.get("width") + snakeButton.getFitWidth()) / 2.5);
+        snakeButton.setY(settings.get("height")/ 4);
+
+        snakeButton.setOnMouseClicked(e -> {
+            System.out.println("Snake was clicked");
+
+        });
+
+
+        ImageView centipedeButton = new ImageView(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Centipede.png")).toString(), true));
+        centipedeButton.setPreserveRatio(true);
+        centipedeButton.setFitHeight(200);
+
+
+        centipedeButton.setX((settings.get("width") + centipedeButton.getFitWidth()) / 2.5);
+        centipedeButton.setY(settings.get("height")/ 2);
+
+        centipedeButton.setOnMouseClicked(e -> {
+            CentipedeMain centipede = new CentipedeMain();
+            centipede.start(new Stage());
+            primaryStage.close();
+        });
+
+
+
+
+        pane.getChildren().addAll(text, centipedeButton, snakeButton);
+
+
+        Scene scene = new Scene(pane, settings.get("width"), settings.get("height"));
+        scene.setFill(Color.BLACK);
 
         primaryStage.setScene(scene);
         primaryStage.show();
