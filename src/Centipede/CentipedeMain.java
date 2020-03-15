@@ -1,10 +1,7 @@
 package Centipede;
 
 
-import javafx.animation.AnimationTimer;
-import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -12,6 +9,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -31,6 +30,9 @@ public class CentipedeMain extends Application {
     private Dictionary<String, Integer> settings = setup.createDictionary();
     private boolean isPlaying = true;
     private AnimationTimer animationTimer;
+    private Timeline timeline;
+    private ParallelTransition parallelTransition = new ParallelTransition();
+    private ArrayList<Timeline> timelines = new ArrayList<>();
 
     @Override
     public void start(Stage primaryStage) {
@@ -49,7 +51,11 @@ public class CentipedeMain extends Application {
         hBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 
 
-        Text text = new Text("Testing");
+        Text text = new Text("Score: ");
+        text.setFill(Color.WHITE);
+        text.setStyle("-fx-font-weight: bold");
+        text.setFont(Font.font("Arial", 20));
+
         hBox.getChildren().addAll(text);
 
 
@@ -61,6 +67,12 @@ public class CentipedeMain extends Application {
         borderPane.setCenter(pane);
         borderPane.setTop(hBox);
 
+        Centipede centipede = new Centipede();
+        ImageView centipedeHead = centipede.createCentipede();
+
+        pane.getChildren().addAll(centipedeHead);
+
+
         Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
 
 
@@ -68,12 +80,9 @@ public class CentipedeMain extends Application {
 
         if (isPlaying) {
             animationTimer = playAnimation(game, player);
-            unpauseGame(animationTimer);
+            animationTimer.start();
             movementControl(scene, game, player, pane, rectangle);
         }
-
-
-
 
 
         primaryStage.setScene(scene);
@@ -111,7 +120,7 @@ public class CentipedeMain extends Application {
 
 
 
-                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(50), ae -> {
+                timeline = new Timeline(new KeyFrame(Duration.millis(16), ae -> {
 
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
@@ -119,10 +128,12 @@ public class CentipedeMain extends Application {
                         pane.getChildren().remove(bullet);
                         pane.getChildren().remove(rectangle);
                     }
+
                 }));
 
-                timeline.setCycleCount(90);
+                timeline.setCycleCount(Timeline.INDEFINITE);
                 timeline.play();
+                timelines.add(timeline);
             }
 
         });
@@ -160,10 +171,16 @@ public class CentipedeMain extends Application {
 
     public void pauseGame(AnimationTimer animationTimer) {
         animationTimer.stop();
+        for (Timeline timeline : timelines) {
+            timeline.stop();
+        }
     }
 
     public void unpauseGame(AnimationTimer animationTimer) {
         animationTimer.start();
+        for (Timeline timeline : timelines) {
+            timeline.play();
+        }
     }
 
 

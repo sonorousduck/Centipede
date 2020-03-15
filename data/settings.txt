@@ -2,4 +2,4 @@ width:800
 height:800
 playerSize:20
 playerSpeed:200
-bulletSpeed:10
+bulletSpeed:5

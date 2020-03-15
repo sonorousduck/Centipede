@@ -15,13 +15,13 @@ public class Player {
         this.x = width / 2;
         this.size = size;
         this.rectangle = new Rectangle();
-        this.y = height - 10;
+        this.y = height - 60;
 
         rectangle.setHeight(this.size);
         rectangle.setWidth(this.size);
 
         rectangle.setX(width / 2);
-        rectangle.setY(height - 20);
+        rectangle.setY(height - 60);
 
         rectangle.setFill(Color.RED);
 
