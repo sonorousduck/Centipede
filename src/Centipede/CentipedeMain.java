@@ -10,7 +10,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -59,7 +58,7 @@ public class CentipedeMain extends Application {
 
 
 
-        pane.getChildren().add(player.getRectangle());
+        pane.getChildren().add(player.getPlayer());
         pane.getChildren().add(rectangle);
 
 
@@ -73,6 +72,7 @@ public class CentipedeMain extends Application {
 
 
         Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
+        scene.setFill(Color.BLACK);
 
 
 
@@ -98,9 +98,9 @@ public class CentipedeMain extends Application {
                 if (game.getLastUpdateTime() > 0) {
                     final double elapsedSeconds = (timestamp - game.getLastUpdateTime()) / 1_000_000_000.0;
                     final double deltaX = elapsedSeconds * game.getRectangleVelocity();
-                    final double oldX = player.getRectangle().getTranslateX();
+                    final double oldX = player.getPlayer().getTranslateX();
                     final double newX = Math.max(-game.getWidth() / 2, Math.min(game.getWidth(), oldX + deltaX));
-                    player.getRectangle().setTranslateX(newX);
+                    player.getPlayer().setTranslateX(newX);
                     player.setX(newX + settings.get("width")/2);
 
                 }
@@ -114,7 +114,7 @@ public class CentipedeMain extends Application {
 
         scene.setOnMouseClicked(e -> {
             System.out.println(timelines.size());
-            if (e.getButton().toString().equals("PRIMARY")) {
+            if (e.getButton().toString().equals("PRIMARY") && isPlaying) {
 
                 // Memory thing. Should delete and stop animations if too many of them
                 if (timelines.size() > 50) {
@@ -159,13 +159,11 @@ public class CentipedeMain extends Application {
                     game.setRectangleVelocity(game.getRectangleSpeed());
                 }
             if (e.getCode() == KeyCode.ESCAPE) {
-                pauseGame(animationTimer);
-
-
+                pauseGame(animationTimer, scene);
 
                 PauseScreen pauseScreen = new PauseScreen();
                 if(pauseScreen.display()) {
-                    unpauseGame(animationTimer);
+                    unpauseGame(animationTimer, scene);
                 }
 
 
@@ -179,16 +177,19 @@ public class CentipedeMain extends Application {
         });
     }
 
-    public void pauseGame(AnimationTimer animationTimer) {
+    public void pauseGame(AnimationTimer animationTimer, Scene scene) {
         animationTimer.stop();
+        isPlaying = false;
         for (Timeline timeline : timelines) {
             timeline.stop();
         }
     }
 
-    public void unpauseGame(AnimationTimer animationTimer) {
+    public void unpauseGame(AnimationTimer animationTimer, Scene scene) {
+        isPlaying = true;
         animationTimer.start();
         for (Timeline timeline : timelines) {
+
             timeline.play();
         }
     }

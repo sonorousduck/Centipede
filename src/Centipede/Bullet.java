@@ -13,11 +13,11 @@ import java.util.Objects;
 
 public class Bullet {
     public ImageView createBullet(Player player) {
-        Image testImage = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("cannonball.png")).toString(), true);
+        Image testImage = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("LaserBeam.png")).toString(), true);
         ImageView imageView = new ImageView(testImage);
         imageView.setPreserveRatio(true);
-        imageView.setFitHeight(10);
-        imageView.setX(player.getX());
+        imageView.setFitHeight(20);
+        imageView.setX(player.getX() + player.getSize() / 1.95);
         System.out.println(imageView.getX());
         imageView.setY(player.getY() - player.getSize());
         imageView.setSmooth(true);
