@@ -31,6 +31,7 @@ public class CentipedeMain extends Application {
     private AnimationTimer animationTimer;
     private Timeline timeline;
     private ArrayList<Timeline> timelines = new ArrayList<>();
+    private ArrayList<ImageView> centipedeBody;
 
     @Override
     public void start(Stage primaryStage) {
@@ -41,6 +42,7 @@ public class CentipedeMain extends Application {
         Rectangle rectangle = new Rectangle(100, 100, 100, 100);
         rectangle.setX(100);
         rectangle.setY(100);
+        rectangle.setFill(Color.WHITE);
 
 
         BorderPane borderPane = new BorderPane();
@@ -66,9 +68,12 @@ public class CentipedeMain extends Application {
         borderPane.setTop(hBox);
 
         Centipede centipede = new Centipede();
-        ImageView centipedeHead = centipede.createCentipede();
+        centipedeBody = centipede.createCentipede();
 
-        pane.getChildren().addAll(centipedeHead);
+
+
+
+        pane.getChildren().addAll(centipedeBody);
 
 
         Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
@@ -132,11 +137,15 @@ public class CentipedeMain extends Application {
                 timeline = new Timeline(new KeyFrame(Duration.millis(16), ae -> {
 
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
-
-                    if (bullet.getBoundsInParent().intersects(rectangle.getBoundsInParent())) {
-                        pane.getChildren().remove(bullet);
-                        pane.getChildren().remove(rectangle);
+                    for (ImageView i : centipedeBody) {
+                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
+                            pane.getChildren().remove(bullet);
+                            i.setX(10000);
+                            pane.getChildren().remove(i);
+                        }
                     }
+
+
 
                 }));
 
