@@ -39,10 +39,10 @@ public class CentipedeMain extends Application {
         Game game = new Game(settings.get("height"), settings.get("width"), settings.get("playerSpeed"));
         Player player = new Player(settings.get("width"), settings.get("playerSize"), settings.get("height"));
 
-        Rectangle rectangle = new Rectangle(100, 100, 100, 100);
-        rectangle.setX(100);
-        rectangle.setY(100);
-        rectangle.setFill(Color.WHITE);
+//        Rectangle rectangle = new Rectangle(100, 100, 100, 100);
+//        rectangle.setX(100);
+//        rectangle.setY(100);
+//        rectangle.setFill(Color.WHITE);
 
 
         BorderPane borderPane = new BorderPane();
@@ -61,14 +61,14 @@ public class CentipedeMain extends Application {
 
 
         pane.getChildren().add(player.getPlayer());
-        pane.getChildren().add(rectangle);
+//        pane.getChildren().add(rectangle);
 
 
         borderPane.setCenter(pane);
         borderPane.setTop(hBox);
 
         Centipede centipede = new Centipede();
-        centipedeBody = centipede.createCentipede();
+        centipedeBody = centipede.createCentipede(5);
 
 
 
@@ -85,7 +85,9 @@ public class CentipedeMain extends Application {
         if (isPlaying) {
             animationTimer = playAnimation(game, player);
             animationTimer.start();
-            movementControl(scene, game, player, pane, rectangle);
+            movementControl(scene, game, player, pane);
+            centipedeGo();
+
 
         }
 
@@ -108,6 +110,35 @@ public class CentipedeMain extends Application {
                     player.getPlayer().setTranslateX(newX);
                     player.setX(newX + settings.get("width")/2);
 
+
+                    try {
+                        centipedeBody.get(0).setX(centipedeBody.get(0).getX() + 1);
+
+                        for (int i = 1; i < centipedeBody.size(); i++) {
+                            int j = i;
+                            //System.out.println(j);
+                            System.out.println(centipedeBody.size());
+//                                centipedeBody.get(increment).setX(centipedeBody.get(increment - 1).getX());
+//                                centipedeBody.get(increment).setY(centipedeBody.get(increment - 1).getY());
+                                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e -> {
+                                    centipedeBody.get(j).setX(centipedeBody.get(j - 1).getX() - 17.5);
+                                    centipedeBody.get(j).setY(centipedeBody.get(j - 1).getY());
+                                }));
+                                timeline.setCycleCount(Timeline.INDEFINITE);
+                                timeline.play();
+                        }
+
+
+
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        System.out.println("ERROR!a");
+                    }
+
+
+
+
+
                 }
                 game.setLastUpdateTime(timestamp);
             }
@@ -115,7 +146,7 @@ public class CentipedeMain extends Application {
         return animationTimer;
     }
 
-    public void movementControl(Scene scene, Game game, Player player, Pane pane, Rectangle rectangle) {
+    public void movementControl(Scene scene, Game game, Player player, Pane pane) {
 
         scene.setOnMouseClicked(e -> {
             System.out.println(timelines.size());
@@ -137,11 +168,17 @@ public class CentipedeMain extends Application {
                 timeline = new Timeline(new KeyFrame(Duration.millis(16), ae -> {
 
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
+
                     for (ImageView i : centipedeBody) {
                         if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
+                            if (centipedeBody.get(0) == i) {
+                                //centipedeBody.remove(0);
+
+                                System.out.println("You are the jead");
+                            }
                             pane.getChildren().remove(bullet);
-                            i.setX(10000);
                             pane.getChildren().remove(i);
+
                         }
                     }
 
@@ -201,6 +238,12 @@ public class CentipedeMain extends Application {
 
             timeline.play();
         }
+    }
+
+    public void centipedeGo() {
+
+
+
     }
 
 

@@ -22,7 +22,7 @@ public class Player {
 
         this.x = width / 2;
         this.size = size;
-        this.rectangle = new Rectangle();
+        //this.rectangle = new Rectangle();
         this.y = height - 60;
 
 
