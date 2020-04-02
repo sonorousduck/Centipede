@@ -4,6 +4,7 @@ package Centipede;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -16,6 +17,7 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Objects;
 
 
 public class CentipedeMain extends Application {
@@ -31,7 +33,10 @@ public class CentipedeMain extends Application {
     private AnimationTimer animationTimer;
     private Timeline timeline;
     private ArrayList<Timeline> timelines = new ArrayList<>();
-    private ArrayList<ImageView> centipedeBody;
+    private ArrayList<CentipedeBody> centipedeBody;
+    private int length;
+    private Centipede centipedeCreator = new Centipede();
+
 
     @Override
     public void start(Stage primaryStage) {
@@ -67,8 +72,10 @@ public class CentipedeMain extends Application {
         borderPane.setCenter(pane);
         borderPane.setTop(hBox);
 
+
         Centipede centipede = new Centipede();
         centipedeBody = centipede.createCentipede(5);
+        length = centipedeBody.size();
 
 
 
@@ -86,9 +93,6 @@ public class CentipedeMain extends Application {
             animationTimer = playAnimation(game, player);
             animationTimer.start();
             movementControl(scene, game, player, pane);
-            centipedeGo();
-
-
         }
 
 
@@ -112,27 +116,29 @@ public class CentipedeMain extends Application {
 
 
                     try {
-                        centipedeBody.get(0).setX(centipedeBody.get(0).getX() + 1);
 
-                        for (int i = 1; i < centipedeBody.size(); i++) {
+
+                        for (int i = 1; i < length; i++) {
                             int j = i;
                             //System.out.println(j);
                             System.out.println(centipedeBody.size());
+
 //                                centipedeBody.get(increment).setX(centipedeBody.get(increment - 1).getX());
 //                                centipedeBody.get(increment).setY(centipedeBody.get(increment - 1).getY());
                                 Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-                                    centipedeBody.get(j).setX(centipedeBody.get(j - 1).getX() - 17.5);
+                                    centipedeBody.get(j).setX(centipedeBody.get(j - 1).getX() - 20);
                                     centipedeBody.get(j).setY(centipedeBody.get(j - 1).getY());
                                 }));
                                 timeline.setCycleCount(Timeline.INDEFINITE);
                                 timeline.play();
                         }
+                        centipedeBody.get(0).setX(centipedeBody.get(0).getX() + 1);
 
 
 
                     }
                     catch (IndexOutOfBoundsException e) {
-                        System.out.println("ERROR!a");
+                        System.out.println("ERROR!");
                     }
 
 
@@ -170,14 +176,21 @@ public class CentipedeMain extends Application {
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
                     for (ImageView i : centipedeBody) {
-                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
-                            if (centipedeBody.get(0) == i) {
-                                //centipedeBody.remove(0);
 
-                                System.out.println("You are the jead");
+                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent()) ) {
+                            if (centipedeBody.get(0) == i) {
+
+                                //i.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("cannonball.png")).toString()));
+                                centipedeBody.get(0).setImage(centipedeBody.get(0).becomeMushroom());
+                                System.out.println("You are the head");
+
+                            } else {
+
+
                             }
                             pane.getChildren().remove(bullet);
-                            pane.getChildren().remove(i);
+                            i.setImage(centipedeBody.get(0).becomeMushroom());
+
 
                         }
                     }
@@ -240,11 +253,6 @@ public class CentipedeMain extends Application {
         }
     }
 
-    public void centipedeGo() {
-
-
-
-    }
 
 
 

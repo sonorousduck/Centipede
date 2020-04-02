@@ -1,23 +1,21 @@
 package Centipede;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Centipede {
 
-    public ArrayList<ImageView> createCentipede(int length) {
-        ArrayList<ImageView> centipedeBody = createCentipedeBody(length, new ArrayList<ImageView>());
-        ImageView centipedeHead = createCentipedeHead();
+    public ArrayList<CentipedeBody> createCentipede(int length) {
+        ArrayList<CentipedeBody> centipedeBody = createCentipedeBody(length, new ArrayList<>());
+        CentipedeBody centipedeHead = createCentipedeHead();
         centipedeBody.add(0, centipedeHead);
         return centipedeBody;
 
     }
-    private ImageView createCentipedeHead() {
+    private CentipedeBody createCentipedeHead() {
         Image centipedeHead = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Centipedehead1.png")).toString(), true);
-        ImageView imageView = new ImageView(centipedeHead);
+        CentipedeBody imageView = new CentipedeBody(centipedeHead);
         imageView.setPreserveRatio(true);
         imageView.setFitHeight(20);
         imageView.setX(300);
@@ -25,15 +23,15 @@ public class Centipede {
         return imageView;
     }
 
-    private ArrayList<ImageView> createCentipedeBody(int length, ArrayList<ImageView> imageViews) {
+    private ArrayList<CentipedeBody> createCentipedeBody(int length, ArrayList<CentipedeBody> imageViews) {
         for (int i = 0; i < length; i++) {
-            Image centipedeBody = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Centipedehead1.png")).toString(), true);
-            ImageView imageView = new ImageView(centipedeBody);
-            imageView.setPreserveRatio(true);
-            imageView.setFitHeight(20);
-            imageView.setX(295 - (i + .75) * 17.5);
-            imageView.setY(300);
-            imageViews.add(imageView);
+            Image centipedeBodyImage = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Centipedehead1.png")).toString(), true);
+            CentipedeBody centipedeBody = new CentipedeBody(centipedeBodyImage);
+            centipedeBody.setPreserveRatio(true);
+            centipedeBody.setFitHeight(20);
+            centipedeBody.setX(295 - (i + .75) * 17.5);
+            centipedeBody.setY(300);
+            imageViews.add(centipedeBody);
 
         }
         return imageViews;
