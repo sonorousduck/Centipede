@@ -8,8 +8,8 @@ public class Centipede {
 
     public ArrayList<CentipedeBody> createCentipede(int length) {
         ArrayList<CentipedeBody> centipedeBody = createCentipedeBody(length, new ArrayList<>());
-        CentipedeBody centipedeHead = createCentipedeHead();
-        centipedeBody.add(0, centipedeHead);
+        //CentipedeBody centipedeHead = createCentipedeHead();
+        //centipedeBody.add(0, centipedeHead);
         return centipedeBody;
 
     }
@@ -29,7 +29,7 @@ public class Centipede {
             CentipedeBody centipedeBody = new CentipedeBody(centipedeBodyImage);
             centipedeBody.setPreserveRatio(true);
             centipedeBody.setFitHeight(20);
-            centipedeBody.setX(295 - (i + .75) * 17.5);
+            centipedeBody.setX(295 - i * 17.5);
             centipedeBody.setY(300);
             imageViews.add(centipedeBody);
 

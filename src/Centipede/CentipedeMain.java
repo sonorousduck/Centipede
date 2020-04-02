@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Objects;
@@ -44,10 +45,6 @@ public class CentipedeMain extends Application {
         Game game = new Game(settings.get("height"), settings.get("width"), settings.get("playerSpeed"));
         Player player = new Player(settings.get("width"), settings.get("playerSize"), settings.get("height"));
 
-//        Rectangle rectangle = new Rectangle(100, 100, 100, 100);
-//        rectangle.setX(100);
-//        rectangle.setY(100);
-//        rectangle.setFill(Color.WHITE);
 
 
         BorderPane borderPane = new BorderPane();
@@ -66,7 +63,6 @@ public class CentipedeMain extends Application {
 
 
         pane.getChildren().add(player.getPlayer());
-//        pane.getChildren().add(rectangle);
 
 
         borderPane.setCenter(pane);
@@ -115,31 +111,33 @@ public class CentipedeMain extends Application {
                     player.setX(newX + settings.get("width")/2);
 
 
-                    try {
 
 
-                        for (int i = 1; i < length; i++) {
-                            int j = i;
-                            //System.out.println(j);
-                            System.out.println(centipedeBody.size());
-
-//                                centipedeBody.get(increment).setX(centipedeBody.get(increment - 1).getX());
-//                                centipedeBody.get(increment).setY(centipedeBody.get(increment - 1).getY());
-                                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-                                    centipedeBody.get(j).setX(centipedeBody.get(j - 1).getX() - 20);
-                                    centipedeBody.get(j).setY(centipedeBody.get(j - 1).getY());
-                                }));
-                                timeline.setCycleCount(Timeline.INDEFINITE);
-                                timeline.play();
-                        }
-                        centipedeBody.get(0).setX(centipedeBody.get(0).getX() + 1);
-
-
-
-                    }
-                    catch (IndexOutOfBoundsException e) {
-                        System.out.println("ERROR!");
-                    }
+//                    try {
+//
+//
+//                        for (int i = 1; i < length; i++) {
+//                            int j = i;
+//                            //System.out.println(j);
+//                            System.out.println(centipedeBody.size());
+//
+////                                centipedeBody.get(increment).setX(centipedeBody.get(increment - 1).getX());
+////                                centipedeBody.get(increment).setY(centipedeBody.get(increment - 1).getY());
+//                                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e -> {
+//                                    centipedeBody.get(j).setX(centipedeBody.get(j - 1).getX() - 20);
+//                                    centipedeBody.get(j).setY(centipedeBody.get(j - 1).getY());
+//                                }));
+//                                timeline.setCycleCount(Timeline.INDEFINITE);
+//                                timeline.play();
+//                        }
+//                        centipedeBody.get(0).setX(centipedeBody.get(0).getX() + 1);
+//
+//
+//
+//                    }
+//                    catch (IndexOutOfBoundsException e) {
+//                        System.out.println("ERROR!");
+//                    }
 
 
 
@@ -153,6 +151,16 @@ public class CentipedeMain extends Application {
     }
 
     public void movementControl(Scene scene, Game game, Player player, Pane pane) {
+
+
+        Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(16), e-> {
+            for (int i = 0; i < length; i++) {
+                centipedeBody.get(i).move();
+            }
+        }));
+//
+        timeline1.setCycleCount(Timeline.INDEFINITE);
+        timeline1.play();
 
         scene.setOnMouseClicked(e -> {
             System.out.println(timelines.size());
