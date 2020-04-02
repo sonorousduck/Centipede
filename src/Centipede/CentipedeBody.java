@@ -16,7 +16,7 @@ public class CentipedeBody extends ImageView {
      * TODO: Turn into a mushroom. Right now, just a Ship.
      */
     public Image becomeMushroom() {
-        return new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("LaserBeam.png")).toString(), true);
+        return new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("cannonball.png")).toString(), true);
     }
 
 
