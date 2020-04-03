@@ -37,6 +37,8 @@ public class CentipedeMain extends Application {
     private ArrayList<CentipedeBody> centipedeBody;
     private int length;
     private Centipede centipedeCreator = new Centipede();
+    private ArrayList<Mushroom> mushroomList = new ArrayList<>();
+    private static final int MAX_LENGTH = 13;
 
 
     @Override
@@ -52,6 +54,7 @@ public class CentipedeMain extends Application {
         HBox hBox = new HBox();
         hBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 
+        setup(pane);
 
         Text text = new Text("Score: ");
         text.setFill(Color.WHITE);
@@ -89,6 +92,8 @@ public class CentipedeMain extends Application {
             animationTimer = playAnimation(game, player);
             animationTimer.start();
             movementControl(scene, game, player, pane);
+
+
         }
 
 
@@ -152,10 +157,32 @@ public class CentipedeMain extends Application {
 
     public void movementControl(Scene scene, Game game, Player player, Pane pane) {
 
+        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(15), e-> {
+            Centipede centipede = new Centipede();
+            ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede((int) (Math.random() * MAX_LENGTH)));
+            for (CentipedeBody centipede1 : newCentipede) {
+                centipede1.startMovement();
+                centipede1.move();
+                centipedeBody.add(centipede1);
+                pane.getChildren().addAll(centipede1);
+            }
+        }));
+        newCentipedes.setCycleCount(Timeline.INDEFINITE);
+        newCentipedes.play();
 
         Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(16), e-> {
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < centipedeBody.size(); i++) {
                 centipedeBody.get(i).move();
+
+                for (CentipedeBody centipedeBody : centipedeBody) {
+
+                    for (Mushroom mushroom : mushroomList) {
+                        if (centipedeBody.intersects(mushroom.getBoundsInParent())) {
+                            centipedeBody.flipDirections();
+                        }
+                    }
+                }
+
             }
         }));
 //
@@ -183,23 +210,31 @@ public class CentipedeMain extends Application {
 
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
-                    for (ImageView i : centipedeBody) {
+                    for (CentipedeBody i : centipedeBody) {
 
                         if (bullet.getBoundsInParent().intersects(i.getBoundsInParent()) ) {
                             if (centipedeBody.get(0) == i) {
 
                                 //i.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("cannonball.png")).toString()));
-                                centipedeBody.get(0).setImage(centipedeBody.get(0).becomeMushroom());
+                                //centipedeBody.get(0).setImage(centipedeBody.get(0).becomeMushroom());
                                 System.out.println("You are the head");
-
-                            } else {
-
 
                             }
                             pane.getChildren().remove(bullet);
-                            i.setImage(centipedeBody.get(0).becomeMushroom());
+                            Mushroom mushroom = i.stopMovementAndKill();
+                            pane.getChildren().add(mushroom);
+                            mushroomList.add(mushroom);
 
 
+
+
+                        }
+                    }
+                    for (Mushroom m : mushroomList) {
+                        if (bullet.getBoundsInParent().intersects(m.getBoundsInParent())) {
+                            m.onHit();
+                            bullet.setX(10000000);
+                            pane.getChildren().remove(bullet);
                         }
                     }
 
@@ -250,6 +285,9 @@ public class CentipedeMain extends Application {
         for (Timeline timeline : timelines) {
             timeline.stop();
         }
+        for (CentipedeBody centipedeBody : centipedeBody) {
+            centipedeBody.stopMovement();
+        }
     }
 
     public void unpauseGame(AnimationTimer animationTimer, Scene scene) {
@@ -259,9 +297,23 @@ public class CentipedeMain extends Application {
 
             timeline.play();
         }
+        for (CentipedeBody centipedeBody : centipedeBody) {
+            centipedeBody.startMovement();
+        }
     }
 
+    public void setup(Pane pane) {
+        for (int i = 0; i < 30; i++ ) {
+            Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom1.png")).toString(), true);
+            Mushroom mushroom = new Mushroom(image);
+            mushroom.setPreserveRatio(true);
+            mushroom.setFitHeight(20);
+            mushroom.randomlyGenerateMushroomLocation();
+            mushroomList.add(mushroom);
+            pane.getChildren().add(mushroom);
 
+        }
+    }
 
 
 }
