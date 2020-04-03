@@ -31,10 +31,12 @@ public class CentipedeBody extends ImageView {
 
         if (this.getX() > settings.get("width") - 15) {
             movement *= -1;
+            this.setRotate(180);
             this.setY(this.getY() + 20);
 
         } else if (this.getX() <= 0) {
             movement *= -1;
+            this.setRotate(180);
             this.setY(this.getY() + 20);
 
         }
@@ -62,6 +64,7 @@ public class CentipedeBody extends ImageView {
 
     public void flipDirections() {
         this.movement *= -1;
+        this.setRotate(90);
         this.setY(this.getY() + 15);
 //        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e-> {
 //            this.setY(this.getY() + .15);
@@ -69,6 +72,9 @@ public class CentipedeBody extends ImageView {
 //        timeline.setCycleCount(16);
 //        timeline.play();
 
+    }
+    public boolean isDead() {
+        return !alive;
     }
 
 

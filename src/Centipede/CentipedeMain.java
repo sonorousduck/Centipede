@@ -39,6 +39,7 @@ public class CentipedeMain extends Application {
     private Centipede centipedeCreator = new Centipede();
     private ArrayList<Mushroom> mushroomList = new ArrayList<>();
     private static final int MAX_LENGTH = 13;
+    private Text score;
 
 
     @Override
@@ -61,7 +62,13 @@ public class CentipedeMain extends Application {
         text.setStyle("-fx-font-weight: bold");
         text.setFont(Font.font("Arial", 20));
 
-        hBox.getChildren().addAll(text);
+        score = new Text("0");
+        score.setFill(Color.WHITE);
+        score.setStyle("-fx-font-weight: bold");
+        score.setFont(Font.font("Arial", 20));
+
+
+        hBox.getChildren().addAll(text, score);
 
 
 
@@ -210,7 +217,15 @@ public class CentipedeMain extends Application {
 
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
+
+
+
                     for (CentipedeBody i : centipedeBody) {
+
+                        if (i.isDead()) {
+                            centipedeBody.remove(i);
+                            break;
+                        }
 
                         if (bullet.getBoundsInParent().intersects(i.getBoundsInParent()) ) {
                             if (centipedeBody.get(0) == i) {
@@ -220,10 +235,15 @@ public class CentipedeMain extends Application {
                                 System.out.println("You are the head");
 
                             }
+
                             pane.getChildren().remove(bullet);
                             Mushroom mushroom = i.stopMovementAndKill();
                             pane.getChildren().add(mushroom);
                             mushroomList.add(mushroom);
+                            int scoreNum = Integer.parseInt(score.getText());
+                            scoreNum += 100;
+                            score.setText(String.valueOf(scoreNum));
+
 
 
 
@@ -306,8 +326,8 @@ public class CentipedeMain extends Application {
         for (int i = 0; i < 30; i++ ) {
             Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom1.png")).toString(), true);
             Mushroom mushroom = new Mushroom(image);
-            mushroom.setPreserveRatio(true);
-            mushroom.setFitHeight(20);
+
+
             mushroom.randomlyGenerateMushroomLocation();
             mushroomList.add(mushroom);
             pane.getChildren().add(mushroom);

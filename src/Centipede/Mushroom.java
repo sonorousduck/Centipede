@@ -19,14 +19,20 @@ public class Mushroom extends ImageView {
         this.locationY = locationY;
         this.setX(locationX);
         this.setY(locationY);
+        this.setPreserveRatio(true);
+        this.setFitHeight(20);
     }
 
     Mushroom(Image image) {
         super(image);
+        this.setPreserveRatio(true);
+        this.setFitHeight(20);
     }
 
     Mushroom(Image image, double locationX, double locationY) {
         super(image);
+        this.setPreserveRatio(true);
+        this.setFitHeight(20);
         this.locationX = locationX;
         this.locationY = locationY;
     }
@@ -56,11 +62,11 @@ public class Mushroom extends ImageView {
                 break;
             case 2:
                 this.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom3.png")).toString(), true));
-                this.setFitHeight(8);
+                //this.setFitHeight(8);
                 break;
             case 3:
                 this.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom4.png")).toString(), true));
-                this.setFitHeight(8);
+                //this.setFitHeight(8);
                 break;
             default:
                 this.setVisible(false);
