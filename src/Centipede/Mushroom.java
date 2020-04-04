@@ -51,12 +51,16 @@ public class Mushroom extends ImageView {
         return this.locationY;
     }
 
+    public void resetHits() {
+        this.timesHit = 0;
+    }
+
     public void onHit() {
         this.timesHit++;
         System.out.println(timesHit);
         switch (timesHit) {
             case 0:
-                break;
+                this.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom1.png")).toString(), true));
             case 1:
                 this.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom2.png")).toString(), true));
                 break;

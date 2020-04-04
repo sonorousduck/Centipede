@@ -3,6 +3,7 @@ package Centipede;
 
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,6 +16,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.math.BigInteger;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -36,7 +38,6 @@ public class CentipedeMain extends Application {
     private ArrayList<Timeline> timelines = new ArrayList<>();
     private ArrayList<CentipedeBody> centipedeBody;
     private int length;
-    private Centipede centipedeCreator = new Centipede();
     private ArrayList<Mushroom> mushroomList = new ArrayList<>();
     private static final int MAX_LENGTH = 13;
     private Text score;
@@ -121,9 +122,6 @@ public class CentipedeMain extends Application {
                     final double newX = Math.max(-game.getWidth() / 2, Math.min(game.getWidth(), oldX + deltaX));
                     player.getPlayer().setTranslateX(newX);
                     player.setX(newX + settings.get("width")/2);
-
-
-
 
 //                    try {
 //
@@ -230,8 +228,6 @@ public class CentipedeMain extends Application {
                         if (bullet.getBoundsInParent().intersects(i.getBoundsInParent()) ) {
                             if (centipedeBody.get(0) == i) {
 
-                                //i.setImage(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("cannonball.png")).toString()));
-                                //centipedeBody.get(0).setImage(centipedeBody.get(0).becomeMushroom());
                                 System.out.println("You are the head");
 
                             }
@@ -240,26 +236,20 @@ public class CentipedeMain extends Application {
                             Mushroom mushroom = i.stopMovementAndKill();
                             pane.getChildren().add(mushroom);
                             mushroomList.add(mushroom);
+                            bullet.setX(Double.NEGATIVE_INFINITY);
+                            pane.getChildren().remove(bullet);
                             int scoreNum = Integer.parseInt(score.getText());
                             scoreNum += 100;
                             score.setText(String.valueOf(scoreNum));
-
-
-
-
-
                         }
                     }
                     for (Mushroom m : mushroomList) {
                         if (bullet.getBoundsInParent().intersects(m.getBoundsInParent())) {
                             m.onHit();
-                            bullet.setX(10000000);
+                            bullet.setX(Double.NEGATIVE_INFINITY);
                             pane.getChildren().remove(bullet);
                         }
                     }
-
-
-
                 }));
 
 
