@@ -4,6 +4,7 @@ package Centipede;
 import javafx.animation.*;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,15 +22,16 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Objects;
+import java.util.Random;
 
 
 public class CentipedeMain extends Application {
 
 
-
     public static void main(String[] args) {
         launch(args);
     }
+
     private Settings setup = new Settings();
     private Dictionary<String, Integer> settings = setup.createDictionary();
     private boolean isPlaying = true;
@@ -37,7 +39,8 @@ public class CentipedeMain extends Application {
     private Timeline timeline;
     private ArrayList<Timeline> timelines = new ArrayList<>();
     private ArrayList<CentipedeBody> centipedeBody;
-    private int length;
+    private ArrayList<ArrayList<CentipedeBody>> listOfCentipedes = new ArrayList<ArrayList<CentipedeBody>>();
+    private int lives = 3;
     private ArrayList<Mushroom> mushroomList = new ArrayList<>();
     private static final int MAX_LENGTH = 13;
     private Text score;
@@ -50,11 +53,12 @@ public class CentipedeMain extends Application {
         Player player = new Player(settings.get("width"), settings.get("playerSize"), settings.get("height"));
 
 
-
         BorderPane borderPane = new BorderPane();
         Pane pane = new Pane();
         HBox hBox = new HBox();
         hBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+
+
 
         setup(pane);
 
@@ -63,15 +67,25 @@ public class CentipedeMain extends Application {
         text.setStyle("-fx-font-weight: bold");
         text.setFont(Font.font("Arial", 20));
 
+
         score = new Text("0");
         score.setFill(Color.WHITE);
         score.setStyle("-fx-font-weight: bold");
         score.setFont(Font.font("Arial", 20));
 
 
+
+
         hBox.getChildren().addAll(text, score);
 
 
+        for (int i = 0; i < lives; i++) {
+//            hBox.setAlignment(Pos.TOP_RIGHT);
+            ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Ship.png")).toString(), true));
+            imageView.setPreserveRatio(true);
+            imageView.setFitHeight(20);
+            hBox.getChildren().add(imageView);
+        }
 
         pane.getChildren().add(player.getPlayer());
 
@@ -80,11 +94,10 @@ public class CentipedeMain extends Application {
         borderPane.setTop(hBox);
 
 
+
         Centipede centipede = new Centipede();
         centipedeBody = centipede.createCentipede(5);
-        length = centipedeBody.size();
-
-
+        listOfCentipedes.add(centipedeBody);
 
 
         pane.getChildren().addAll(centipedeBody);
@@ -92,8 +105,6 @@ public class CentipedeMain extends Application {
 
         Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
         scene.setFill(Color.BLACK);
-
-
 
 
         if (isPlaying) {
@@ -121,36 +132,7 @@ public class CentipedeMain extends Application {
                     final double oldX = player.getPlayer().getTranslateX();
                     final double newX = Math.max(-game.getWidth() / 2, Math.min(game.getWidth(), oldX + deltaX));
                     player.getPlayer().setTranslateX(newX);
-                    player.setX(newX + settings.get("width")/2);
-
-//                    try {
-//
-//
-//                        for (int i = 1; i < length; i++) {
-//                            int j = i;
-//                            //System.out.println(j);
-//                            System.out.println(centipedeBody.size());
-//
-////                                centipedeBody.get(increment).setX(centipedeBody.get(increment - 1).getX());
-////                                centipedeBody.get(increment).setY(centipedeBody.get(increment - 1).getY());
-//                                Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-//                                    centipedeBody.get(j).setX(centipedeBody.get(j - 1).getX() - 20);
-//                                    centipedeBody.get(j).setY(centipedeBody.get(j - 1).getY());
-//                                }));
-//                                timeline.setCycleCount(Timeline.INDEFINITE);
-//                                timeline.play();
-//                        }
-//                        centipedeBody.get(0).setX(centipedeBody.get(0).getX() + 1);
-//
-//
-//
-//                    }
-//                    catch (IndexOutOfBoundsException e) {
-//                        System.out.println("ERROR!");
-//                    }
-
-
-
+                    player.setX(newX + settings.get("width") / 2);
 
 
                 }
@@ -162,33 +144,37 @@ public class CentipedeMain extends Application {
 
     public void movementControl(Scene scene, Game game, Player player, Pane pane) {
 
-        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(15), e-> {
+        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(10), e -> {
             Centipede centipede = new Centipede();
-            ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede((int) (Math.random() * MAX_LENGTH)));
+
+            ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede(new Random().nextInt(MAX_LENGTH - 3) + 3));
             for (CentipedeBody centipede1 : newCentipede) {
                 centipede1.startMovement();
-                centipede1.move();
+                centipede1.move(mushroomList);
                 centipedeBody.add(centipede1);
                 pane.getChildren().addAll(centipede1);
             }
         }));
         newCentipedes.setCycleCount(Timeline.INDEFINITE);
         newCentipedes.play();
+        timelines.add(0, newCentipedes);
 
-        Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(16), e-> {
-            for (int i = 0; i < centipedeBody.size(); i++) {
-                centipedeBody.get(i).move();
+        Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
+            for(int j = 0; j < listOfCentipedes.size(); j++)
+                for (int i = 0; i < listOfCentipedes.get(j).size(); i++) {
+                    listOfCentipedes.get(j).get(i).move(mushroomList);
+                    if (i - 1 == -1) {
 
-                for (CentipedeBody centipedeBody : centipedeBody) {
-
-                    for (Mushroom mushroom : mushroomList) {
-                        if (centipedeBody.intersects(mushroom.getBoundsInParent())) {
-                            centipedeBody.flipDirections();
+                    }
+                    else if (listOfCentipedes.get(j).get(i).intersects(listOfCentipedes.get(j).get(i - 1).getBoundsInParent())) {
+                        double direction = listOfCentipedes.get(j).get(i).getMovement();
+                        if (direction < 1) {
+                            listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() - 5);
+                        } else {
+                            listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() + 5);
                         }
                     }
                 }
-
-            }
         }));
 //
         timeline1.setCycleCount(Timeline.INDEFINITE);
@@ -200,8 +186,8 @@ public class CentipedeMain extends Application {
 
                 // Memory thing. Should delete and stop animations if too many of them
                 if (timelines.size() > 50) {
-                    for (int i = 0; i < 30; i++) {
-                        timelines.get(0).stop();
+                    for (int i = 1; i < 30; i++) {
+                        timelines.get(1).stop();
                         timelines.remove(0);
                     }
                 }
@@ -216,8 +202,6 @@ public class CentipedeMain extends Application {
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
 
-
-
                     for (CentipedeBody i : centipedeBody) {
 
                         if (i.isDead()) {
@@ -225,18 +209,19 @@ public class CentipedeMain extends Application {
                             break;
                         }
 
-                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent()) ) {
+                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
                             if (centipedeBody.get(0) == i) {
 
                                 System.out.println("You are the head");
 
                             }
-
+                            int test = centipedeBody.indexOf(i);
                             pane.getChildren().remove(bullet);
                             Mushroom mushroom = i.stopMovementAndKill();
                             pane.getChildren().add(mushroom);
+                            centipedeBody.get(test).flipDirections();
                             mushroomList.add(mushroom);
-                            bullet.setX(Double.NEGATIVE_INFINITY);
+                            bullet.setX(100000);
                             pane.getChildren().remove(bullet);
                             int scoreNum = Integer.parseInt(score.getText());
                             scoreNum += 100;
@@ -246,7 +231,7 @@ public class CentipedeMain extends Application {
                     for (Mushroom m : mushroomList) {
                         if (bullet.getBoundsInParent().intersects(m.getBoundsInParent())) {
                             m.onHit();
-                            bullet.setX(Double.NEGATIVE_INFINITY);
+                            bullet.setX(100000);
                             pane.getChildren().remove(bullet);
                         }
                     }
@@ -261,20 +246,19 @@ public class CentipedeMain extends Application {
         });
 
 
-
         scene.setOnKeyPressed(e -> {
 
-                if (e.getCode() == KeyCode.A) {
-                    game.setRectangleVelocity(-game.getRectangleSpeed());
-                }
-                if (e.getCode() == KeyCode.D) {
-                    game.setRectangleVelocity(game.getRectangleSpeed());
-                }
+            if (e.getCode() == KeyCode.A) {
+                game.setRectangleVelocity(-game.getRectangleSpeed());
+            }
+            if (e.getCode() == KeyCode.D) {
+                game.setRectangleVelocity(game.getRectangleSpeed());
+            }
             if (e.getCode() == KeyCode.ESCAPE) {
                 pauseGame(animationTimer, scene);
 
                 PauseScreen pauseScreen = new PauseScreen();
-                if(pauseScreen.display()) {
+                if (pauseScreen.display()) {
                     unpauseGame(animationTimer, scene);
                 }
 
@@ -313,7 +297,7 @@ public class CentipedeMain extends Application {
     }
 
     public void setup(Pane pane) {
-        for (int i = 0; i < 30; i++ ) {
+        for (int i = 0; i < 30; i++) {
             Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Mushroom1.png")).toString(), true);
             Mushroom mushroom = new Mushroom(image);
 
