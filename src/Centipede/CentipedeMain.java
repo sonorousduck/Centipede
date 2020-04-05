@@ -170,11 +170,12 @@ public class CentipedeMain extends Application {
         timelines.add(0, newCentipedes);
 
         Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-            for(int j = 0; j < listOfCentipedes.size(); j++)
+            boolean runNext = false;
+            for(int j = 0; j < listOfCentipedes.size(); j++) {
                 for (int i = 0; i < listOfCentipedes.get(j).size(); i++) {
                     listOfCentipedes.get(j).get(i).move(mushroomList);
-                    if (i - 1 == -1) {}
-                    else if (listOfCentipedes.get(j).get(i).intersects(listOfCentipedes.get(j).get(i - 1).getBoundsInParent())) {
+                    if (i - 1 == -1) {
+                    } else if (listOfCentipedes.get(j).get(i).intersects(listOfCentipedes.get(j).get(i - 1).getBoundsInParent())) {
                         double direction = listOfCentipedes.get(j).get(i).getMovement();
                         if (direction < 1) {
                             listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() - 5);
@@ -182,18 +183,29 @@ public class CentipedeMain extends Application {
                             listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() + 5);
                         }
                     }
-                    if (listOfCentipedes.get(j).get(i).intersects(player.getPlayer().getBoundsInParent())) {
-                        for (int k = 0; k < listOfCentipedes.get(j).size(); k++) {
-                            System.out.println(listOfCentipedes.get(j).get(k));
-                            listOfCentipedes.get(j).get(k).setX(100000);
-                            listOfCentipedes.get(j).remove(k);
-                        }
-                        lives--;
-                        hBox.getChildren().remove(hBox.getChildren().size() - 1);
-                        System.out.println("Lives: " + lives);
+
+
+
+                    if (listOfCentipedes.get(j).get(i).intersects(player.getPlayer().getBoundsInParent()) && !runNext) {
+                        runNext = true;
+                    }
+
+                    if (runNext) {
+                        System.out.println("REMOVED");
+                        listOfCentipedes.get(j).get(i).stopMovementAndKill();
 
                     }
+
+
+
                 }
+            }
+            if (runNext) {
+                lives--;
+                hBox.getChildren().remove(hBox.getChildren().size() - 1);
+                System.out.println("Lives: " + lives);
+            }
+
         }));
 //
         timeline1.setCycleCount(Timeline.INDEFINITE);

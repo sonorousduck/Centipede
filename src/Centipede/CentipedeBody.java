@@ -8,7 +8,7 @@ import java.util.Dictionary;
 public class CentipedeBody extends ImageView {
     private Settings setup = new Settings();
     private Dictionary<String, Integer> settings = setup.createDictionary();
-    private double movement = 12;
+    private double movement = 15;
     private boolean alive = true;
     private double tempMovement = movement;
     private boolean hitBottom = false;
