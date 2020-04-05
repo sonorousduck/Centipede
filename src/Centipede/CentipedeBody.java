@@ -1,22 +1,18 @@
 package Centipede;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Duration;
-
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Objects;
 
 public class CentipedeBody extends ImageView {
     private Settings setup = new Settings();
     private Dictionary<String, Integer> settings = setup.createDictionary();
-    private double movement = 2.5;
+    private double movement = 12;
     private boolean alive = true;
     private double tempMovement = movement;
+    private boolean hitBottom = false;
+    int movementDown = 25;
 
 
 
@@ -28,17 +24,25 @@ public class CentipedeBody extends ImageView {
     public void move(ArrayList<Mushroom> mushroomList) {
         this.setX(this.getX() + movement);
 
+        if (this.getY() > settings.get("height") - 75 ) {
+            if (!hitBottom) {
+                movementDown *= -1;
+            }
+            hitBottom = true;
+
+        }
+
+
+        if (hitBottom && this.getY() < settings.get("height") - 150) {
+            movementDown *= -1;
+            hitBottom = false;
+        }
+
         if (this.getX() > settings.get("width") - 15) {
             flipDirections();
-//            movement *= -1;
-//            this.setRotate(180);
-//            this.setY(this.getY() + 20);
 
         } else if (this.getX() <= 0) {
             flipDirections();
-//            movement *= -1;
-//            this.setRotate(180);
-//            this.setY(this.getY() + 20);
 
         } else {
             for (int i = 0; i < mushroomList.size(); i++) {
@@ -46,8 +50,10 @@ public class CentipedeBody extends ImageView {
                     flipDirections();
                 }
             }
-
         }
+
+
+
 
     }
     public void stopMovement() {
@@ -76,14 +82,8 @@ public class CentipedeBody extends ImageView {
 
 
         this.setRotate(this.getRotate() + 180);
-        this.setY(this.getY() + 25);
         this.movement *= -1;
-//        Timeline timeline = new Timeline(new KeyFrame(Duration.millis(16), e-> {
-//
-//            this.setY(this.getY() + .2);
-//        }));
-//        timeline.setCycleCount(16);
-//        timeline.play();
+        this.setY(this.getY() + movementDown);
 
     }
     public boolean isDead() {

@@ -18,8 +18,8 @@ public class Centipede {
         CentipedeBody imageView = new CentipedeBody(centipedeHead);
         imageView.setPreserveRatio(true);
         imageView.setFitHeight(20);
-        imageView.setX(300);
-        imageView.setY(20);
+        imageView.setX(200);
+        imageView.setY(10);
         return imageView;
     }
 
@@ -29,8 +29,8 @@ public class Centipede {
             CentipedeBody centipedeBody = new CentipedeBody(centipedeBodyImage);
             centipedeBody.setPreserveRatio(true);
             centipedeBody.setFitHeight(20);
-            centipedeBody.setX(length * 50 - i * 17.5);
-            centipedeBody.setY(20);
+            centipedeBody.setX(length * 20 - i * 17.5);
+            centipedeBody.setY(10);
             imageViews.add(centipedeBody);
 
         }

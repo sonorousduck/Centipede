@@ -44,6 +44,7 @@ public class CentipedeMain extends Application {
     private ArrayList<Mushroom> mushroomList = new ArrayList<>();
     private static final int MAX_LENGTH = 13;
     private Text score;
+    private HBox hBox = new HBox();
 
 
     @Override
@@ -55,7 +56,6 @@ public class CentipedeMain extends Application {
 
         BorderPane borderPane = new BorderPane();
         Pane pane = new Pane();
-        HBox hBox = new HBox();
         hBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 
 
@@ -73,19 +73,23 @@ public class CentipedeMain extends Application {
         score.setStyle("-fx-font-weight: bold");
         score.setFont(Font.font("Arial", 20));
 
+        Text fillerText = new Text("\t\t\t\t\t\t\t\t\t\t\t\tLives: ");
+        fillerText.setFill(Color.WHITE);
+        fillerText.setStyle("-fx-font-weight: bold");
+        fillerText.setFont(Font.font("Arial", 20));
 
 
 
-        hBox.getChildren().addAll(text, score);
 
+        hBox.getChildren().addAll(text, score, fillerText);
 
         for (int i = 0; i < lives; i++) {
-//            hBox.setAlignment(Pos.TOP_RIGHT);
             ImageView imageView = new ImageView(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("Ship.png")).toString(), true));
             imageView.setPreserveRatio(true);
             imageView.setFitHeight(20);
             hBox.getChildren().add(imageView);
         }
+
 
         pane.getChildren().add(player.getPlayer());
 
@@ -105,7 +109,7 @@ public class CentipedeMain extends Application {
 
         Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
         scene.setFill(Color.BLACK);
-
+        System.out.println(scene.getWidth());
 
         if (isPlaying) {
             animationTimer = playAnimation(game, player);
@@ -117,6 +121,8 @@ public class CentipedeMain extends Application {
 
 
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+
         primaryStage.show();
 
     }
@@ -125,7 +131,6 @@ public class CentipedeMain extends Application {
         AnimationTimer animationTimer = new AnimationTimer() {
             @Override
             public void handle(long timestamp) {
-                // Courtesy of somewhere. Need to find it
                 if (game.getLastUpdateTime() > 0) {
                     final double elapsedSeconds = (timestamp - game.getLastUpdateTime()) / 1_000_000_000.0;
                     final double deltaX = elapsedSeconds * game.getRectangleVelocity();
@@ -144,7 +149,12 @@ public class CentipedeMain extends Application {
 
     public void movementControl(Scene scene, Game game, Player player, Pane pane) {
 
-        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(10), e -> {
+
+        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(15), e -> {
+            if (lives == 0) {
+               pauseGame(animationTimer);
+            }
+
             Centipede centipede = new Centipede();
 
             ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede(new Random().nextInt(MAX_LENGTH - 3) + 3));
@@ -163,9 +173,7 @@ public class CentipedeMain extends Application {
             for(int j = 0; j < listOfCentipedes.size(); j++)
                 for (int i = 0; i < listOfCentipedes.get(j).size(); i++) {
                     listOfCentipedes.get(j).get(i).move(mushroomList);
-                    if (i - 1 == -1) {
-
-                    }
+                    if (i - 1 == -1) {}
                     else if (listOfCentipedes.get(j).get(i).intersects(listOfCentipedes.get(j).get(i - 1).getBoundsInParent())) {
                         double direction = listOfCentipedes.get(j).get(i).getMovement();
                         if (direction < 1) {
@@ -173,6 +181,17 @@ public class CentipedeMain extends Application {
                         } else {
                             listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() + 5);
                         }
+                    }
+                    if (listOfCentipedes.get(j).get(i).intersects(player.getPlayer().getBoundsInParent())) {
+                        for (int k = 0; k < listOfCentipedes.get(j).size(); k++) {
+                            System.out.println(listOfCentipedes.get(j).get(k));
+                            listOfCentipedes.get(j).get(k).setX(100000);
+                            listOfCentipedes.get(j).remove(k);
+                        }
+                        lives--;
+                        hBox.getChildren().remove(hBox.getChildren().size() - 1);
+                        System.out.println("Lives: " + lives);
+
                     }
                 }
         }));
@@ -215,11 +234,11 @@ public class CentipedeMain extends Application {
                                 System.out.println("You are the head");
 
                             }
-                            int test = centipedeBody.indexOf(i);
+
                             pane.getChildren().remove(bullet);
                             Mushroom mushroom = i.stopMovementAndKill();
                             pane.getChildren().add(mushroom);
-                            centipedeBody.get(test).flipDirections();
+                            i.flipDirections();
                             mushroomList.add(mushroom);
                             bullet.setX(100000);
                             pane.getChildren().remove(bullet);
@@ -246,34 +265,91 @@ public class CentipedeMain extends Application {
         });
 
 
+        //TODO: IMPLEMENT MOVING FORWARD AND BACK, ALSO MAKING IT SO YOU CAN'T GO OUT OF THE SCREEN. BOTH OF THESE WILL PLAY OFF THE OTHER, FIGURING ONE OUT LETS ME DO THE OTHER
+
+
         scene.setOnKeyPressed(e -> {
 
-            if (e.getCode() == KeyCode.A) {
+            if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.LEFT) {
                 game.setRectangleVelocity(-game.getRectangleSpeed());
             }
-            if (e.getCode() == KeyCode.D) {
+            if ((e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT)) {
                 game.setRectangleVelocity(game.getRectangleSpeed());
             }
+            if (e.getCode() == KeyCode.W || e.getCode() == KeyCode.UP) {
+
+            }
+            if (e.getCode() == KeyCode.SPACE) {
+                Bullet bulletClass = new Bullet();
+                ImageView bullet = bulletClass.createBullet(player);
+                pane.getChildren().add(bullet);
+
+
+                timeline = new Timeline(new KeyFrame(Duration.millis(16), ae -> {
+
+                    bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
+
+
+                    for (CentipedeBody i : centipedeBody) {
+
+                        if (i.isDead()) {
+                            centipedeBody.remove(i);
+                            break;
+                        }
+
+                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
+                            if (centipedeBody.get(0) == i) {
+
+                                System.out.println("You are the head");
+
+                            }
+
+                            pane.getChildren().remove(bullet);
+                            Mushroom mushroom = i.stopMovementAndKill();
+                            pane.getChildren().add(mushroom);
+                            i.flipDirections();
+                            mushroomList.add(mushroom);
+                            bullet.setX(100000);
+                            pane.getChildren().remove(bullet);
+                            int scoreNum = Integer.parseInt(score.getText());
+                            scoreNum += 100;
+                            score.setText(String.valueOf(scoreNum));
+                        }
+                    }
+                    for (Mushroom m : mushroomList) {
+                        if (bullet.getBoundsInParent().intersects(m.getBoundsInParent())) {
+                            m.onHit();
+                            bullet.setX(100000);
+                            pane.getChildren().remove(bullet);
+                        }
+                    }
+                }));
+
+
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.play();
+                timelines.add(timeline);
+            }
+
             if (e.getCode() == KeyCode.ESCAPE) {
-                pauseGame(animationTimer, scene);
+                pauseGame(animationTimer);
 
                 PauseScreen pauseScreen = new PauseScreen();
                 if (pauseScreen.display()) {
-                    unpauseGame(animationTimer, scene);
+                    unpauseGame(animationTimer);
                 }
-
-
             }
-
-
         });
 
         scene.setOnKeyReleased(e -> {
-            game.setRectangleVelocity(0);
+            System.out.println(e.getCode());
+            if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.LEFT) {
+                game.setRectangleVelocity(0);
+            }
         });
     }
 
-    public void pauseGame(AnimationTimer animationTimer, Scene scene) {
+    public void pauseGame(AnimationTimer animationTimer) {
         animationTimer.stop();
         isPlaying = false;
         for (Timeline timeline : timelines) {
@@ -284,7 +360,7 @@ public class CentipedeMain extends Application {
         }
     }
 
-    public void unpauseGame(AnimationTimer animationTimer, Scene scene) {
+    public void unpauseGame(AnimationTimer animationTimer) {
         isPlaying = true;
         animationTimer.start();
         for (Timeline timeline : timelines) {

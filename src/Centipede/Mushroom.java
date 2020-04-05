@@ -38,8 +38,11 @@ public class Mushroom extends ImageView {
     }
 
     public void randomlyGenerateMushroomLocation() {
+
+
+
         this.locationX = Math.random() * (settings.get("width") - 20);
-        this.locationY = Math.random() * (settings.get("height") - 200);
+        this.locationY = (Math.random() * (settings.get("height") - 150)) + 30;
         this.setX(locationX);
         this.setY(locationY);
     }
