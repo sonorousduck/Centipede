@@ -3,6 +3,7 @@ package Centipede;
 
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -45,10 +46,12 @@ public class CentipedeMain extends Application {
     private static final int MAX_LENGTH = 13;
     private Text score;
     private HBox hBox = new HBox();
+    private Stage primaryStage;
 
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
 
         Game game = new Game(settings.get("height"), settings.get("width"), settings.get("playerSpeed"));
         Player player = new Player(settings.get("width"), settings.get("playerSize"), settings.get("height"));
@@ -204,6 +207,7 @@ public class CentipedeMain extends Application {
                 lives--;
                 hBox.getChildren().remove(hBox.getChildren().size() - 1);
                 System.out.println("Lives: " + lives);
+                runNext = false;
             }
 
         }));
@@ -347,7 +351,12 @@ public class CentipedeMain extends Application {
                 pauseGame(animationTimer);
 
                 PauseScreen pauseScreen = new PauseScreen();
+
                 if (pauseScreen.display()) {
+                    if (pauseScreen.getGameClosed()) {
+                        primaryStage.close();
+
+                    }
                     unpauseGame(animationTimer);
                 }
             }
@@ -373,6 +382,7 @@ public class CentipedeMain extends Application {
     }
 
     public void unpauseGame(AnimationTimer animationTimer) {
+
         isPlaying = true;
         animationTimer.start();
         for (Timeline timeline : timelines) {

@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import java.util.Dictionary;
 import java.util.Objects;
 
-public class Main extends Application {
+public class GameMain extends Application {
 
     public static void main(String[] args) {
         launch(args);

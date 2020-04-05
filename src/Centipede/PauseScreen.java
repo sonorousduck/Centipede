@@ -1,5 +1,6 @@
 package Centipede;
 
+import Snake.Snake;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -15,6 +16,7 @@ public class PauseScreen {
 
 
     private boolean closed = false;
+    private boolean closeGame = false;
 
     public boolean display() {
         Stage pauseScreen = new Stage();
@@ -49,10 +51,9 @@ public class PauseScreen {
         });
 
         exitGame.setOnMouseClicked(e-> {
-            CentipedeMain main = new CentipedeMain();
-            main.start(new Stage());
-            Platform.exit();
-
+            closeGame = true;
+            closed = true;
+            pauseScreen.close();
 
         });
 
@@ -76,6 +77,10 @@ public class PauseScreen {
 
 
         return closed;
+    }
 
+    public boolean getGameClosed() {
+        System.out.println("Testing");
+        return closeGame;
     }
 }
