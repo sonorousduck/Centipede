@@ -1,3 +1,5 @@
+package Main;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Dictionary;
@@ -16,7 +18,7 @@ public class Settings {
                 settings.put(subdictionary[0], Integer.parseInt(subdictionary[1]));
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Settings file is missing");
+            System.out.println("Main.Settings file is missing");
         }
 
         return settings;

@@ -1,4 +1,7 @@
+package Main;
+
 import Centipede.CentipedeMain;
+import Centipede.Settings;
 import Snake.Snake;
 import javafx.application.Application;
 import javafx.scene.Scene;
