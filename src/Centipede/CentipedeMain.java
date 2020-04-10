@@ -13,6 +13,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Objects;
@@ -41,6 +43,7 @@ public class CentipedeMain extends Application {
     private HBox hBox = new HBox();
     private Stage primaryStage;
     private boolean runNext = false;
+    private boolean shouldGenerate = false;
 
 
     @Override
@@ -107,7 +110,6 @@ public class CentipedeMain extends Application {
 
         Scene scene = new Scene(borderPane, settings.get("width"), settings.get("height"));
         scene.setFill(Color.BLACK);
-        System.out.println(scene.getWidth());
 
         if (isPlaying) {
             animationTimer = playAnimation(game, player);
@@ -148,48 +150,63 @@ public class CentipedeMain extends Application {
     public void movementControl(Scene scene, Game game, Player player, Pane pane) {
 
 
-        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
+        Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(7), e -> {
 
 
 
-            Centipede centipede = new Centipede();
+                Centipede centipede = new Centipede();
 
-            ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede(new Random().nextInt(MAX_LENGTH - 3) + 3));
 
-            for (CentipedeBody centipede1 : newCentipede) {
-                centipede1.startMovement();
-                centipede1.move(mushroomList);
-                centipedeBody.add(centipede1);
-                pane.getChildren().addAll(centipede1);
+                ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede(new Random().nextInt(MAX_LENGTH - 3) + 3));
+
+
+            if (shouldGenerate) {
+                ArrayList<CentipedeBody> newCentipedeBody = new ArrayList<>();
+                for (CentipedeBody centipede1 : newCentipede) {
+                    centipede1.startMovement();
+                    centipede1.move(mushroomList);
+                    newCentipedeBody.add(centipede1);
+                    pane.getChildren().addAll(centipede1);
+                }
+
+                listOfCentipedes.add(newCentipedeBody);
+                System.out.println("GENERATED!");
+                System.out.println(listOfCentipedes.size());
             }
+            shouldGenerate = true;
         }));
         newCentipedes.setCycleCount(Timeline.INDEFINITE);
         newCentipedes.play();
         timelines.add(0, newCentipedes);
 
 
+
+
         Timeline timeline1 = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-            System.out.println(listOfCentipedes.size());
             if (lives == 0) {
                 pauseGame(animationTimer);
-//                PauseScreen pauseScreen = new PauseScreen();
-//                pauseScreen.display();
+
+                // TODO: GAME OVER SCREEN
+
                 endGame();
             }
+
+            if (listOfCentipedes.size() > 0) {
+
 
             for(int j = 0; j < listOfCentipedes.size(); j++) {
                 for (int i = 0; i < listOfCentipedes.get(j).size(); i++) {
                     listOfCentipedes.get(j).get(i).move(mushroomList);
                     if (i - 1 == -1) {
                     } else if (listOfCentipedes.get(j).get(i).intersects(listOfCentipedes.get(j).get(i - 1).getBoundsInParent())) {
+//                        System.out.println("INTERSECT!");
                         double direction = listOfCentipedes.get(j).get(i).getMovement();
                         if (direction < 1) {
-                            listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() - 5);
+                            listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() + .5);
                         } else {
-                            listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() + 5);
+                            listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() - .5);
                         }
                     }
-
 
 
                     if (listOfCentipedes.get(j).get(i).intersects(player.getPlayer().getBoundsInParent())) {
@@ -198,13 +215,27 @@ public class CentipedeMain extends Application {
 
                     if (runNext) {
                         System.out.println("REMOVED");
-                        listOfCentipedes.get(j).get(i).stopMovementAndKill();
+
+                        for (int k = 0; k < listOfCentipedes.size(); k++) {
+                            for (int z = 0; z < listOfCentipedes.get(k).size(); z++) {
+                                listOfCentipedes.get(k).get(z).stopMovementAndKill();
+                            }
+                        }
+
+                        for (int l = 0; l < listOfCentipedes.size(); l++) {
+                            listOfCentipedes.remove(0);
+                        }
+
+                        break;
                     }
 
 
 
+
                 }
-            } Timeline checkForLives = new Timeline(new KeyFrame(Duration.millis(500), ae -> {
+                }
+            }
+            Timeline checkForLives = new Timeline(new KeyFrame(Duration.millis(600), ae -> {
                 if (runNext) {
                     lives--;
                     if (hBox.getChildren().size() > 3) {
@@ -217,22 +248,21 @@ public class CentipedeMain extends Application {
             }));
             checkForLives.setCycleCount(Timeline.INDEFINITE);
             checkForLives.play();
-
-
         }));
-//
+
         timeline1.setCycleCount(Timeline.INDEFINITE);
         timeline1.play();
+        timelines.add(timeline1);
 
         scene.setOnMouseClicked(e -> {
             System.out.println(timelines.size());
             if (e.getButton().toString().equals("PRIMARY") && isPlaying) {
 
                 // Memory thing. Should delete and stop animations if too many of them
-                if (timelines.size() > 50) {
+                if (timelines.size() > 100) {
                     for (int i = 1; i < 30; i++) {
                         timelines.get(1).stop();
-                        timelines.remove(0);
+                        timelines.remove(1);
                     }
                 }
 
@@ -263,7 +293,6 @@ public class CentipedeMain extends Application {
                             pane.getChildren().remove(bullet);
                             Mushroom mushroom = i.stopMovementAndKill();
                             pane.getChildren().add(mushroom);
-                            i.flipDirections();
                             mushroomList.add(mushroom);
                             bullet.setX(100000);
                             pane.getChildren().remove(bullet);
@@ -332,7 +361,6 @@ public class CentipedeMain extends Application {
                             pane.getChildren().remove(bullet);
                             Mushroom mushroom = i.stopMovementAndKill();
                             pane.getChildren().add(mushroom);
-                            i.flipDirections();
                             mushroomList.add(mushroom);
                             bullet.setX(100000);
                             pane.getChildren().remove(bullet);
@@ -366,7 +394,11 @@ public class CentipedeMain extends Application {
                         primaryStage.close();
 
                         GameMain gameMain = new GameMain();
-                        gameMain.start(new Stage());
+                        try {
+                            gameMain.start(new Stage());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
 
                     } else {
                         unpauseGame(animationTimer);

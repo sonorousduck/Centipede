@@ -12,7 +12,7 @@ public class CentipedeBody extends ImageView {
     private boolean alive = true;
     private double tempMovement = movement;
     private boolean hitBottom = false;
-    int movementDown = 15;
+    private int movementDown = 15;
 
 
 
@@ -38,10 +38,10 @@ public class CentipedeBody extends ImageView {
             hitBottom = false;
         }
 
-        if (this.getX() > settings.get("width") - 15) {
+        if (this.getX() > settings.get("width") - movement) {
             flipDirections();
 
-        } else if (this.getX() <= 0) {
+        } else if (this.getX() + movement <= 0) {
             flipDirections();
 
         } else {
@@ -82,9 +82,9 @@ public class CentipedeBody extends ImageView {
 
 
         this.setRotate(this.getRotate() + 180);
-        this.movement *= -1;
         this.setY(this.getY() + movementDown);
-
+        this.movement *= -1;
+        this.setX(this.getX() + (movement / 8));
     }
     public boolean isDead() {
         return !alive;
