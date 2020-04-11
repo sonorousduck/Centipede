@@ -14,7 +14,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Objects;
@@ -44,6 +43,7 @@ public class CentipedeMain extends Application {
     private Stage primaryStage;
     private boolean runNext = false;
     private boolean shouldGenerate = false;
+    private ArrayList<Timeline> centipedeTimelines = new ArrayList<>();
 
 
     @Override
@@ -152,13 +152,9 @@ public class CentipedeMain extends Application {
 
         Timeline newCentipedes = new Timeline(new KeyFrame(Duration.seconds(7), e -> {
 
-
-
                 Centipede centipede = new Centipede();
 
-
                 ArrayList<CentipedeBody> newCentipede = new ArrayList<>(centipede.createCentipede(new Random().nextInt(MAX_LENGTH - 3) + 3));
-
 
             if (shouldGenerate) {
                 ArrayList<CentipedeBody> newCentipedeBody = new ArrayList<>();
@@ -170,14 +166,13 @@ public class CentipedeMain extends Application {
                 }
 
                 listOfCentipedes.add(newCentipedeBody);
-                System.out.println("GENERATED!");
-                System.out.println(listOfCentipedes.size());
+
             }
             shouldGenerate = true;
         }));
         newCentipedes.setCycleCount(Timeline.INDEFINITE);
         newCentipedes.play();
-        timelines.add(0, newCentipedes);
+        centipedeTimelines.add(0, newCentipedes);
 
 
 
@@ -214,7 +209,7 @@ public class CentipedeMain extends Application {
                     }
 
                     if (runNext) {
-                        System.out.println("REMOVED");
+//                        System.out.println("REMOVED");
 
                         for (int k = 0; k < listOfCentipedes.size(); k++) {
                             for (int z = 0; z < listOfCentipedes.get(k).size(); z++) {
@@ -222,9 +217,9 @@ public class CentipedeMain extends Application {
                             }
                         }
 
-                        for (int l = 0; l < listOfCentipedes.size(); l++) {
-                            listOfCentipedes.remove(0);
-                        }
+//                        for (int l = 0; l < listOfCentipedes.size(); l++) {
+//                            listOfCentipedes.remove(0);
+//                        }
 
                         break;
                     }
@@ -235,7 +230,7 @@ public class CentipedeMain extends Application {
                 }
                 }
             }
-            Timeline checkForLives = new Timeline(new KeyFrame(Duration.millis(600), ae -> {
+            Timeline checkForLives = new Timeline(new KeyFrame(Duration.millis(50), ae -> {
                 if (runNext) {
                     lives--;
                     if (hBox.getChildren().size() > 3) {
@@ -255,10 +250,11 @@ public class CentipedeMain extends Application {
         timelines.add(timeline1);
 
         scene.setOnMouseClicked(e -> {
-            System.out.println(timelines.size());
+
+
             if (e.getButton().toString().equals("PRIMARY") && isPlaying) {
 
-                // Memory thing. Should delete and stop animations if too many of them
+//                 Memory thing. Should delete and stop animations if too many of them
                 if (timelines.size() > 100) {
                     for (int i = 1; i < 30; i++) {
                         timelines.get(1).stop();
@@ -276,29 +272,26 @@ public class CentipedeMain extends Application {
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
 
-                    for (CentipedeBody i : centipedeBody) {
+                    for (ArrayList<CentipedeBody> listCentipedes : listOfCentipedes) {
+                        for (CentipedeBody i : listCentipedes) {
 
-                        if (i.isDead()) {
-                            centipedeBody.remove(i);
-                            break;
-                        }
-
-                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
-                            if (centipedeBody.get(0) == i) {
-
-                                System.out.println("You are the head");
-
+                            if (i.isDead()) {
+                                listCentipedes.remove(i);
+                                break;
                             }
 
-                            pane.getChildren().remove(bullet);
-                            Mushroom mushroom = i.stopMovementAndKill();
-                            pane.getChildren().add(mushroom);
-                            mushroomList.add(mushroom);
-                            bullet.setX(100000);
-                            pane.getChildren().remove(bullet);
-                            int scoreNum = Integer.parseInt(score.getText());
-                            scoreNum += 100;
-                            score.setText(String.valueOf(scoreNum));
+                            if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
+                                pane.getChildren().remove(bullet);
+                                Mushroom mushroom = i.stopMovementAndKill();
+                                pane.getChildren().add(mushroom);
+                                i.flipDirections();
+                                mushroomList.add(mushroom);
+                                bullet.setX(100000);
+                                pane.getChildren().remove(bullet);
+                                int scoreNum = Integer.parseInt(score.getText());
+                                scoreNum += 100;
+                                score.setText(String.valueOf(scoreNum));
+                            }
                         }
                     }
                     for (Mushroom m : mushroomList) {
@@ -344,36 +337,36 @@ public class CentipedeMain extends Application {
                     bullet.setY(bullet.getY() - settings.get("bulletSpeed"));
 
 
-                    for (CentipedeBody i : centipedeBody) {
+                    for (ArrayList<CentipedeBody> listCentipedes : listOfCentipedes) {
+                        for (CentipedeBody i : listCentipedes) {
 
-                        if (i.isDead()) {
-                            centipedeBody.remove(i);
-                            break;
-                        }
-
-                        if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
-                            if (centipedeBody.get(0) == i) {
-
-                                System.out.println("You are the head");
-
+                            if (i.isDead()) {
+                                listCentipedes.remove(i);
+                                break;
                             }
 
-                            pane.getChildren().remove(bullet);
-                            Mushroom mushroom = i.stopMovementAndKill();
-                            pane.getChildren().add(mushroom);
-                            mushroomList.add(mushroom);
-                            bullet.setX(100000);
-                            pane.getChildren().remove(bullet);
-                            int scoreNum = Integer.parseInt(score.getText());
-                            scoreNum += 100;
-                            score.setText(String.valueOf(scoreNum));
+                            if (bullet.getBoundsInParent().intersects(i.getBoundsInParent())) {
+
+                                pane.getChildren().remove(bullet);
+                                Mushroom mushroom = i.stopMovementAndKill();
+                                pane.getChildren().add(mushroom);
+                                i.flipDirections();
+                                mushroomList.add(mushroom);
+                                bullet.setX(100000);
+                                pane.getChildren().remove(bullet);
+                                int scoreNum = Integer.parseInt(score.getText());
+                                scoreNum += 100;
+                                score.setText(String.valueOf(scoreNum));
+                            }
                         }
-                    }
-                    for (Mushroom m : mushroomList) {
-                        if (bullet.getBoundsInParent().intersects(m.getBoundsInParent())) {
-                            m.onHit();
-                            bullet.setX(100000);
-                            pane.getChildren().remove(bullet);
+
+
+                        for (Mushroom m : mushroomList) {
+                            if (bullet.getBoundsInParent().intersects(m.getBoundsInParent())) {
+                                m.onHit();
+                                bullet.setX(100000);
+                                pane.getChildren().remove(bullet);
+                            }
                         }
                     }
                 }));
@@ -408,7 +401,7 @@ public class CentipedeMain extends Application {
         });
 
         scene.setOnKeyReleased(e -> {
-            System.out.println(e.getCode());
+//            System.out.println(e.getCode());
             if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.LEFT) {
                 game.setRectangleVelocity(0);
             }
@@ -421,6 +414,10 @@ public class CentipedeMain extends Application {
         for (Timeline timeline : timelines) {
             timeline.stop();
         }
+        for (Timeline timeline : centipedeTimelines) {
+            timeline.stop();
+        }
+
         for (CentipedeBody centipedeBody : centipedeBody) {
             centipedeBody.stopMovement();
         }
@@ -431,7 +428,10 @@ public class CentipedeMain extends Application {
         isPlaying = true;
         animationTimer.start();
         for (Timeline timeline : timelines) {
+            timeline.play();
+        }
 
+        for (Timeline timeline : centipedeTimelines) {
             timeline.play();
         }
         for (CentipedeBody centipedeBody : centipedeBody) {

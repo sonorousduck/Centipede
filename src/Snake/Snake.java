@@ -28,7 +28,6 @@ public class Snake extends Application {
 
     private Direction direction = Direction.EAST;
     private Apple apple;
-    private int time = 200;
     private boolean gameOver = false;
 
     @Override
@@ -75,7 +74,7 @@ public class Snake extends Application {
             }
         }
 
-        SnakeObject snake = new SnakeObject(new ArrayList<Body>(), 1, 0, direction);
+        SnakeObject snake = new SnakeObject(new ArrayList<>(), 1, 0, direction);
         snake.getLength().add(new Body(new Point2D(5, 1)));
         snake.incrementLength();
         snake.incrementLength();

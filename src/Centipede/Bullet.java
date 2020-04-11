@@ -18,7 +18,6 @@ public class Bullet {
         imageView.setPreserveRatio(true);
         imageView.setFitHeight(17.5);
         imageView.setX(player.getX() + player.getSize() / 1.57);
-        System.out.println(imageView.getX());
         imageView.setY(player.getY() - player.getSize() + 5);
         imageView.setSmooth(true);
         return imageView;
