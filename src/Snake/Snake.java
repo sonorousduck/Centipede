@@ -5,7 +5,6 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -79,7 +78,7 @@ public class Snake extends Application {
         snake.incrementLength();
         snake.incrementLength();
 
-        apple = randomAppleLocation(gameBoard, rectangles);
+        apple = randomAppleLocation(rectangles);
 
 
         scene.setOnKeyPressed(e -> {
@@ -107,13 +106,11 @@ public class Snake extends Application {
 
 
                 snake.incrementLength();
-                apple = randomAppleLocation(gameBoard, rectangles);
-                //redraw(snake, apple, gameBoard, rectangles);
+                apple = randomAppleLocation(rectangles);
             }
 
             if (gameOver) {
                 text.setFill(Color.RED);
-                return;
             } else {
 
                 move(snake, apple, gameBoard, rectangles);
@@ -126,7 +123,7 @@ public class Snake extends Application {
     }
 
 
-    public Apple randomAppleLocation(ArrayList<ArrayList<Integer>> gameBoard, ArrayList<ArrayList<Rectangle>> rectangles) {
+    public Apple randomAppleLocation(ArrayList<ArrayList<Rectangle>> rectangles) {
 
         Apple apple = new Apple(Color.RED);
 
@@ -137,7 +134,7 @@ public class Snake extends Application {
 
     public boolean isMatching(SnakeObject snake, Apple apple, ArrayList<ArrayList<Integer>> gameBoard, ArrayList<ArrayList<Rectangle>> rectangles) {
         if ((int)snake.getLength().get(0).getLocation().getX() == (int) apple.getLocation().getX() && (int)snake.getLength().get(0).getLocation().getY() == (int) apple.getLocation().getY()) {
-            randomAppleLocation(gameBoard, rectangles);
+            randomAppleLocation(rectangles);
             return true;
         }
         return false;

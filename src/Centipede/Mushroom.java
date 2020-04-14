@@ -3,6 +3,7 @@ package Centipede;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Objects;
 
@@ -37,7 +38,7 @@ public class Mushroom extends ImageView {
         this.locationY = locationY;
     }
 
-    public void randomlyGenerateMushroomLocation() {
+    public void randomlyGenerateMushroomLocation(ArrayList<Mushroom> mushroomTrackedList) {
 
 
 
@@ -45,6 +46,21 @@ public class Mushroom extends ImageView {
         this.locationY = (Math.random() * (settings.get("height") - 150)) + 30;
         this.setX(locationX);
         this.setY(locationY);
+
+
+        for (Mushroom m : mushroomTrackedList) {
+            System.out.println(this.getBoundsInParent().intersects(m.getBoundsInParent()));
+
+            while (this.getBoundsInParent().intersects(m.getBoundsInParent())) {
+                this.locationX = Math.random() * (settings.get("width") - 20);
+                this.locationY = (Math.random() * (settings.get("height") - 150)) + 30;
+
+                System.out.println(this.getX());
+                this.setX(locationX);
+                System.out.println(this.getX());
+                this.setY(locationY);
+            }
+        }
     }
 
     public double getLocationX() {

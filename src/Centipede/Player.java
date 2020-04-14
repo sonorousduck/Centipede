@@ -2,17 +2,13 @@ package Centipede;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-
 
 import java.util.Objects;
 
 public class Player {
     private double x;
-    private int y;
+    private double y;
     private int size;
-    private Rectangle rectangle;
     private ImageView player;
 
 
@@ -22,7 +18,6 @@ public class Player {
 
         this.x = width / 2;
         this.size = size;
-        //this.rectangle = new Rectangle();
         this.y = height - 60;
 
 
@@ -47,7 +42,7 @@ public class Player {
         this.x = x;
     }
 
-    public int getY() { return this.y; }
+    public double getY() { return this.y; }
 
     public int getSize() {
         return this.size;
@@ -58,6 +53,5 @@ public class Player {
     }
 
 
-
-
+    public void setY(double y) { this.y = y; }
 }

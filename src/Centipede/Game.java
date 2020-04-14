@@ -6,17 +6,13 @@ public class Game {
     private int rectangleSpeed;
     private double rectangleVelocity;
     private long lastUpdateTime;
+    private double rectangleYVelocity;
 
     Game(int height, int width, int rectangleSpeed) {
         this.height = height;
         this.width = width;
         this.rectangleSpeed = rectangleSpeed;
-    }
 
-    Game() {
-        this.height = 800;
-        this.width = 800;
-        this.rectangleSpeed = 200;
     }
 
     public int getHeight() {
@@ -54,10 +50,13 @@ public class Game {
         this.rectangleVelocity = rectangleVelocity;
     }
 
+    public void setRectangleYVelocity(double rectangleYVelocity) { this.rectangleYVelocity = rectangleYVelocity; }
+
     public void setLastUpdateTime(long lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    public double getRectangleYVelocity() { return this.rectangleYVelocity; }
 }
 
 

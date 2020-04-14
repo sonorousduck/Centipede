@@ -44,6 +44,9 @@ public class CentipedeMain extends Application {
     private boolean runNext = false;
     private boolean shouldGenerate = false;
     private ArrayList<Timeline> centipedeTimelines = new ArrayList<>();
+    private ArrayList<Mushroom> mushroomLocationList = new ArrayList<>();
+    private boolean tooLeft = false;
+    private boolean tooDown = false;
 
 
     @Override
@@ -134,11 +137,15 @@ public class CentipedeMain extends Application {
                 if (game.getLastUpdateTime() > 0) {
                     final double elapsedSeconds = (timestamp - game.getLastUpdateTime()) / 1_000_000_000.0;
                     final double deltaX = elapsedSeconds * game.getRectangleVelocity();
+                    final double deltaY = elapsedSeconds * game.getRectangleYVelocity();
                     final double oldX = player.getPlayer().getTranslateX();
                     final double newX = Math.max(-game.getWidth() / 2, Math.min(game.getWidth(), oldX + deltaX));
+                    final double oldY = player.getPlayer().getTranslateY();
+                    final double newY = Math.max(-game.getHeight() / 2, Math.min(game.getWidth(), oldY + deltaY));
                     player.getPlayer().setTranslateX(newX);
                     player.setX(newX + settings.get("width") / 2);
-
+                    player.getPlayer().setTranslateY(newY);
+                    player.setY(newY + settings.get("height") / 2);
 
                 }
                 game.setLastUpdateTime(timestamp);
@@ -194,7 +201,6 @@ public class CentipedeMain extends Application {
                     listOfCentipedes.get(j).get(i).move(mushroomList);
                     if (i - 1 == -1) {
                     } else if (listOfCentipedes.get(j).get(i).intersects(listOfCentipedes.get(j).get(i - 1).getBoundsInParent())) {
-//                        System.out.println("INTERSECT!");
                         double direction = listOfCentipedes.get(j).get(i).getMovement();
                         if (direction < 1) {
                             listOfCentipedes.get(j).get(i).setX(listOfCentipedes.get(j).get(i).getX() + .5);
@@ -209,7 +215,6 @@ public class CentipedeMain extends Application {
                     }
 
                     if (runNext) {
-//                        System.out.println("REMOVED");
 
                         for (int k = 0; k < listOfCentipedes.size(); k++) {
                             for (int z = 0; z < listOfCentipedes.get(k).size(); z++) {
@@ -217,9 +222,6 @@ public class CentipedeMain extends Application {
                             }
                         }
 
-//                        for (int l = 0; l < listOfCentipedes.size(); l++) {
-//                            listOfCentipedes.remove(0);
-//                        }
 
                         break;
                     }
@@ -312,20 +314,41 @@ public class CentipedeMain extends Application {
         });
 
 
-        //TODO: IMPLEMENT MOVING FORWARD AND BACK, ALSO MAKING IT SO YOU CAN'T GO OUT OF THE SCREEN. BOTH OF THESE WILL PLAY OFF THE OTHER, FIGURING ONE OUT LETS ME DO THE OTHER
-
-
         scene.setOnKeyPressed(e -> {
-
             if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.LEFT) {
                 game.setRectangleVelocity(-game.getRectangleSpeed());
-            }
-            if ((e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT)) {
-                game.setRectangleVelocity(game.getRectangleSpeed());
-            }
-            if (e.getCode() == KeyCode.W || e.getCode() == KeyCode.UP) {
+                if (player.getX() < settings.get("width") - 30) {
+                    tooLeft = false;
+                }
 
             }
+
+            if (player.getX() > settings.get("width") - 25 && e.getCode() != KeyCode.A) {
+                System.out.println("TRUE!");
+                game.setRectangleVelocity(0);
+                tooLeft = true;
+
+
+
+            } else {
+
+                if ((e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT) && !tooLeft) {
+                    game.setRectangleVelocity(game.getRectangleSpeed());
+                }
+
+            }
+
+            if (player.getY() > settings.get("height") - 450 && e.getCode() != KeyCode.W) {
+                game.setRectangleYVelocity(0);
+            } else {
+                if (e.getCode() == KeyCode.W || e.getCode() == KeyCode.UP) {
+                    System.out.println(player.getY());
+                    game.setRectangleYVelocity(-game.getRectangleSpeed());
+                } else if (e.getCode() == KeyCode.S || e.getCode() == KeyCode.DOWN) {
+                    game.setRectangleYVelocity(game.getRectangleSpeed());
+                }
+            }
+
             if (e.getCode() == KeyCode.SPACE) {
                 Bullet bulletClass = new Bullet();
                 ImageView bullet = bulletClass.createBullet(player);
@@ -401,9 +424,11 @@ public class CentipedeMain extends Application {
         });
 
         scene.setOnKeyReleased(e -> {
-//            System.out.println(e.getCode());
             if (e.getCode() == KeyCode.A || e.getCode() == KeyCode.D || e.getCode() == KeyCode.RIGHT || e.getCode() == KeyCode.LEFT) {
                 game.setRectangleVelocity(0);
+            }
+            if (e.getCode() == KeyCode.W || e.getCode() == KeyCode.UP || e.getCode() == KeyCode.S || e.getCode() == KeyCode.DOWN) {
+                game.setRectangleYVelocity(0);
             }
         });
     }
@@ -445,7 +470,8 @@ public class CentipedeMain extends Application {
             Mushroom mushroom = new Mushroom(image);
 
 
-            mushroom.randomlyGenerateMushroomLocation();
+            mushroom.randomlyGenerateMushroomLocation(mushroomLocationList);
+            mushroomLocationList.add(mushroom);
             mushroomList.add(mushroom);
             pane.getChildren().add(mushroom);
 
