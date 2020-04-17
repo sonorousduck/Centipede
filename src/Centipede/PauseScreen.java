@@ -61,6 +61,13 @@ public class PauseScreen {
             pauseScreen.close();
 
         });
+        exitGameText.setOnMouseClicked(e-> {
+            closeGame = true;
+            closed = true;
+            pauseScreen.close();
+
+        });
+
 
 
         Rectangle resumeGame = new Rectangle();
@@ -85,7 +92,11 @@ public class PauseScreen {
         });
 
         resumeGameText.setOnMouseEntered(e ->{
-            resumeGame.setFill(Color.LIMEGREEN);
+            try {
+                resumeGame.setFill(Color.LIMEGREEN);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         });
 
         resumeGameText.setOnMouseExited(e-> {
@@ -102,6 +113,11 @@ public class PauseScreen {
 
         });
 
+        resumeGameText.setOnMouseClicked(e-> {
+            closed = true;
+            pauseScreen.close();
+
+        });
 
 
 

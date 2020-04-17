@@ -14,6 +14,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Objects;
@@ -35,7 +36,7 @@ public class CentipedeMain extends Application {
     private ArrayList<Timeline> timelines = new ArrayList<>();
     private ArrayList<CentipedeBody> centipedeBody;
     private ArrayList<ArrayList<CentipedeBody>> listOfCentipedes = new ArrayList<ArrayList<CentipedeBody>>();
-    private int lives = 3;
+    private int lives = 1;
     private ArrayList<Mushroom> mushroomList = new ArrayList<>();
     private static final int MAX_LENGTH = 13;
     private Text score;
@@ -188,9 +189,11 @@ public class CentipedeMain extends Application {
             if (lives == 0) {
                 pauseGame(animationTimer);
 
-                // TODO: GAME OVER SCREEN
-
-                endGame();
+                try {
+                    endGame();
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
             }
 
             if (listOfCentipedes.size() > 0) {
@@ -478,7 +481,9 @@ public class CentipedeMain extends Application {
         }
     }
 
-    public void endGame() {
+    public void endGame() throws FileNotFoundException {
+        EndScreen endScreen = new EndScreen();
+        endScreen.display(score);
         primaryStage.close();
 
     }
