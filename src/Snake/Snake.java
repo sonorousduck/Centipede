@@ -1,5 +1,6 @@
 package Snake;
 
+import Main.GameMain;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -12,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -40,14 +42,23 @@ public class Snake extends Application {
         ArrayList<ArrayList<Integer>> gameBoard = new ArrayList<>();
 
         Text text = new Text();
+        Text instructions = new Text("Click anywhere to play again");
 
+
+        instructions.setFont(Font.font("Arial", FontWeight.NORMAL, 15));
         text.setFont(Font.font(30));
         text.setText("GAME OVER!");
-        text.setX(400);
-        text.setY(400);
-        text.setFill(Color.TRANSPARENT);
 
-        pane.getChildren().addAll(text);
+
+        text.xProperty().bind(pane.widthProperty().divide(2).subtract(75));
+        text.setY(400);
+
+        instructions.xProperty().bind(pane.widthProperty().divide(2).subtract(80));
+        instructions.setY(450);
+        text.setFill(Color.TRANSPARENT);
+        instructions.setFill(Color.TRANSPARENT);
+
+        pane.getChildren().addAll(text, instructions);
 
         stackPane.getChildren().addAll(gridPane, pane);
 
@@ -95,6 +106,8 @@ public class Snake extends Application {
         });
 
 
+
+
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -111,6 +124,25 @@ public class Snake extends Application {
 
             if (gameOver) {
                 text.setFill(Color.RED);
+                instructions.setFill(Color.LIMEGREEN);
+                scene.setOnMouseClicked(ae -> {
+                    Snake snake1 = new Snake();
+                    snake1.start(new Stage());
+                    primaryStage.close();
+                });
+
+                scene.setOnKeyPressed( f -> {
+                    if (f.getCode() == KeyCode.ESCAPE) {
+                        GameMain gameMain = new GameMain();
+                        try {
+                            gameMain.start(new Stage());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        primaryStage.close();
+
+                    }
+                });
             } else {
 
                 move(snake, apple, gameBoard, rectangles);
@@ -206,6 +238,8 @@ public class Snake extends Application {
         } catch (IndexOutOfBoundsException e) {
             gameOver = true;
         }
+
+
 
 
     }
